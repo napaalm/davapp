@@ -12,6 +12,18 @@ packages
 *.js.deps
 *.js.map
 
-# Include when developing application packages.
-pubspec.lock
+# Or the .idea folder
+.idea/
 
+# Or the .dart_tool folder
+.dart_tool/
+
+# Include when developing application packages.
+# pubspec.lock
+
+# Flutter
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# macOS
+.DS_Store
