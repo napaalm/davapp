@@ -42,6 +42,26 @@ class APIDav extends APIClient {
     return headers;
   }
 
+  @override
+  Future<dynamic> apiGet(String path) async {
+    try {
+      return await super.apiGet(path);
+    } on http.ClientException {
+      await auth.login();
+      return await super.apiGet(path);
+    }
+  }
+
+  @override
+  Future<dynamic> apiPost(String path, dynamic body) async {
+    try {
+      return await super.apiPost(path, body);
+    } on http.ClientException {
+      await auth.login();
+      return await super.apiPost(path, body);
+    }
+  }
+
   Future<Iterable<Docente>> docenti() async =>
       (await apiGet("/docenti")).map((Map obj) => Docente.fromJson(obj));
 
