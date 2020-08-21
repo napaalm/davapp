@@ -34,13 +34,34 @@ class UserInfo {
 }
 
 class APIAuth extends APIClient {
+  static APIAuth _instance;
+
   String username;
   String password;
 
   String token;
   UserInfo userInfo;
 
-  APIAuth(String url, String username, String password) : super(url);
+  static get instance {
+    if (_instance == null) {
+      return _instance;
+    } else {
+      throw StateError("APIAuth singleton is not instantiated");
+    }
+  }
+
+  factory APIAuth(String url, String username, String password) {
+    if (_instance != null) {
+      throw StateError("APIAuth singleton is already instantiated");
+    }
+    return _getInstance(url, username, password);
+  }
+
+  static _getInstance(String url, String username, String password) {
+    return APIAuth._internal(url, username, password);
+  }
+
+  APIAuth._internal(String url, String username, String password) : super(url);
 
   void login() async {
     var response = await apiPost(

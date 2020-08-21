@@ -29,11 +29,31 @@ import 'package:jose/jose.dart' as jose;
 part 'types.dart';
 
 class APIDav extends APIClient {
+  static APIDav _instance;
   APIAuth auth;
 
-  RegExp regexClasse = RegExp("^[1-5][a-zA-Z]\$");
+  final RegExp regexClasse = RegExp("^[1-5][a-zA-Z]\$");
 
-  APIDav(String url, [APIAuth auth]) : super(url);
+  static get instance {
+    if (_instance == null) {
+      return _instance;
+    } else {
+      throw StateError("APIDav singleton is not instantiated");
+    }
+  }
+
+  factory APIDav(String url, APIAuth auth) {
+    if (_instance != null) {
+      throw StateError("APIDav singleton is already instantiated");
+    }
+    return _getInstance(url, auth);
+  }
+
+  static _getInstance(String url, APIAuth auth) {
+    return _instance = APIDav._internal(url, auth);
+  }
+
+  APIDav._internal(String url, APIAuth auth) : super(url);
 
   Map<String, String> get headers {
     var headers = {'Authorization': 'Bearer ' + auth.token};
