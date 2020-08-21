@@ -1,5 +1,5 @@
 /*
- * main.dart
+ * home_page.dart
  *
  * This file is part of davapp.
  *
@@ -18,22 +18,21 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:davapp/ui/main_view.dart';
 
-void main() {
-  runApp(DavApp());
-}
+class HomePage extends StatelessWidget {
+  HomePage({Key key}) : super(key: key);
 
-class DavApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'davapp',
-      theme: ThemeData(
-        primarySwatch: Colors.red,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Placeholder(
+            color: Colors.blue,
+          ),
+        ],
       ),
-      home: MainView(),
     );
   }
 }
