@@ -17,7 +17,7 @@
  * along with davapp.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-part of api_dav;
+part of 'api_dav.dart';
 
 class ApiMessage {
   int codice;

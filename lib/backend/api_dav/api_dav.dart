@@ -17,8 +17,6 @@
  * along with davapp.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-library api_dav;
-
 import 'dart:convert';
 import 'package:davapp/backend/api_client.dart';
 import 'package:davapp/backend/gruppi.dart';
