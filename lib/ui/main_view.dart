@@ -90,6 +90,10 @@ class MainView extends StatefulWidget {
     Pagina.home: HomePage(),
   };
 
+  final Map<Pagina, Widget> bars = {
+    Pagina.home: homeBar,
+  };
+
   MainView({Key key}) : super(key: key);
 
   @override
@@ -108,9 +112,7 @@ class _MainViewState extends State<MainView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Liceo Da Vinci"),
-      ),
+      appBar: widget.bars[_activePage],
       body: widget.pages[_activePage],
       drawer: Drawer(
         child: ListView(
