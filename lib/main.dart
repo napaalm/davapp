@@ -19,6 +19,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:davapp/ui/main_view.dart';
+import 'package:davapp/ui/landing_view.dart';
+import 'package:davapp/ui/login_view.dart';
 
 void main() {
   runApp(DavApp());
@@ -28,12 +30,15 @@ class DavApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'davapp',
-      theme: ThemeData(
-        primarySwatch: Colors.red,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MainView(),
-    );
+        title: 'davapp',
+        theme: ThemeData(
+          primarySwatch: Colors.red,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        routes: {
+          '/': (context) => LandingView(),
+          '/login': (context) => LoginView(),
+          '/home': (context) => MainView(),
+        });
   }
 }
