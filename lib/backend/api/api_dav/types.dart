@@ -19,6 +19,12 @@
 
 part of 'api_dav.dart';
 
+const Map<String, Gruppo> gruppi = {
+  "studenti": Gruppo.studenti,
+  "docenti": Gruppo.docenti,
+  "genitori": Gruppo.genitori,
+};
+
 class ApiMessage {
   int codice;
   String info;
@@ -46,6 +52,7 @@ class Comunicato {
       nome: item['nome'],
       data: DateTime.parse(item['data']),
       tipo: gruppi[item['tipo']],
+      url: item['url'],
     );
   }
 }

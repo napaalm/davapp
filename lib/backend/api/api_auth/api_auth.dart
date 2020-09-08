@@ -18,17 +18,16 @@
  */
 
 import 'dart:convert';
-import 'package:davapp/backend/gruppi.dart';
-import 'package:davapp/backend/api_client.dart';
+import 'package:davapp/backend/api.dart';
 import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart' as jose;
 
 class UserInfo {
   String username;
-  String nome;
-  Gruppo gruppo;
+  String name;
+  Gruppo group;
 
-  UserInfo(this.username, this.nome, this.gruppo);
+  UserInfo(this.username, this.name, this.group);
 }
 
 class APIAuth extends APIClient {
@@ -41,35 +40,37 @@ class APIAuth extends APIClient {
   UserInfo userInfo;
 
   static get instance {
-    if (_instance == null) {
+    if (_instance != null) {
       return _instance;
     } else {
       throw StateError("APIAuth singleton is not instantiated");
     }
   }
 
-  factory APIAuth(String url, String username, String password) {
+  factory APIAuth(String url, [String username, String password]) {
     if (_instance != null) {
       throw StateError("APIAuth singleton is already instantiated");
     }
     return _getInstance(url, username, password);
   }
 
-  static _getInstance(String url, String username, String password) {
-    return APIAuth._internal(url, username, password);
+  static _getInstance(String url, [String username, String password]) {
+    _instance = APIAuth._internal(url, username, password);
+    return _instance;
   }
 
-  APIAuth._internal(String url, String username, String password) : super(url);
+  APIAuth._internal(String url, [String username, String password])
+      : super(url);
 
   void login() async {
     var response = await apiPost(
-        "/login", {"username": this.username, "password": this.password});
+        "/", {"username": this.username, "password": this.password});
 
-    this.token = jsonDecode(response)['access_token'];
+    this.token = response['access_token'];
     var jws = jose.JsonWebSignature.fromCompactSerialization(this.token);
     var payload = jws.unverifiedPayload.jsonContent;
 
     this.userInfo = new UserInfo(
-        this.username, payload['full_name'], gruppi[payload['gruppo']]);
+        this.username, payload['full_name'], gruppi[payload['group']]);
   }
 }

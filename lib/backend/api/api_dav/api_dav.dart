@@ -18,9 +18,7 @@
  */
 
 import 'dart:convert';
-import 'package:davapp/backend/api_client.dart';
-import 'package:davapp/backend/gruppi.dart';
-import 'package:davapp/backend/api_auth/api_auth.dart';
+import 'package:davapp/backend/api.dart';
 import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart' as jose;
 
@@ -30,10 +28,10 @@ class APIDav extends APIClient {
   static APIDav _instance;
   APIAuth auth;
 
-  final RegExp regexClasse = RegExp("^[1-5][a-zA-Z]\$");
+  final RegExp regexClasse = RegExp(r"^[1-5][a-zA-Z]\$");
 
   static get instance {
-    if (_instance == null) {
+    if (_instance != null) {
       return _instance;
     } else {
       throw StateError("APIDav singleton is not instantiated");
@@ -51,7 +49,7 @@ class APIDav extends APIClient {
     return _instance = APIDav._internal(url, auth);
   }
 
-  APIDav._internal(String url, APIAuth auth) : super(url);
+  APIDav._internal(String url, this.auth) : super(url);
 
   Map<String, String> get headers {
     var headers = {'Authorization': 'Bearer ' + auth.token};
@@ -80,44 +78,59 @@ class APIDav extends APIClient {
     }
   }
 
-  Future<Iterable<Docente>> docenti() async =>
-      (await apiGet("/docenti")).map((Map obj) => Docente.fromJson(obj));
+  Future<List<Docente>> docenti() async => (await apiGet("/docenti"))
+      .map((dynamic obj) => Docente.fromJson(obj as Map))
+      .cast<Docente>()
+      .toList();
 
-  Future<Iterable<String>> classi() async => await apiGet("/classi");
+  Future<List<String>> classi() async =>
+      (await apiGet("/classi")).cast<String>();
 
-  Future<Iterable<AgendaEvent>> agenda(DateTime dopo, DateTime prima) async =>
+  Future<List<AgendaEvent>> agenda(DateTime dopo, DateTime prima) async =>
       (await apiPost("/agenda", {
         "dopo": dopo.millisecondsSinceEpoch ~/ 1000,
         "prima": prima.millisecondsSinceEpoch ~/ 1000
       }))
-          .map((Map obj) => AgendaEvent.fromJson(obj));
+          .map((dynamic obj) => AgendaEvent.fromJson(obj as Map))
+          .cast<AgendaEvent>()
+          .toList();
 
-  Future<Iterable<Comunicato>> comunicatiGenitori([int number]) async =>
+  Future<List<Comunicato>> comunicatiGenitori([int number]) async =>
       (await apiGet(
               "/comunicati/genitori" + (number != null ? "/$number" : "")))
-          .map((Map obj) => Comunicato.fromJson(obj));
+          .map((dynamic obj) => Comunicato.fromJson(obj as Map))
+          .cast<Comunicato>()
+          .toList();
 
-  Future<Iterable<Comunicato>> comunicatiDocenti([int number]) async =>
+  Future<List<Comunicato>> comunicatiDocenti([int number]) async =>
       (await apiGet("/comunicati/docenti" + (number != null ? "/$number" : "")))
-          .map((Map obj) => Comunicato.fromJson(obj));
+          .map((dynamic obj) => Comunicato.fromJson(obj as Map))
+          .cast<Comunicato>()
+          .toList();
 
-  Future<Iterable<Comunicato>> comunicatiStudenti([int number]) async =>
+  Future<List<Comunicato>> comunicatiStudenti([int number]) async =>
       (await apiGet(
               "/comunicati/studenti" + (number != null ? "/$number" : "")))
-          .map((Map obj) => Comunicato.fromJson(obj));
+          .map((dynamic obj) => Comunicato.fromJson(obj as Map))
+          .cast<Comunicato>()
+          .toList();
 
-  Future<Iterable<Attivita>> orario([String classe]) async {
+  Future<List<Attivita>> orario([String classe]) async {
     if (classe != null && !regexClasse.hasMatch(classe)) {
       throw FormatException("Formato classe invalido");
     }
 
     return (await apiGet("/orario" + (classe != null ? "/classe/$classe" : "")))
-        .map((Map obj) => Attivita.fromJson(obj));
+        .map((dynamic obj) => Attivita.fromJson(obj as Map))
+        .cast<Attivita>()
+        .toList();
   }
 
-  Future<Iterable<Attivita>> orarioDocente(Docente docente) async =>
+  Future<List<Attivita>> orarioDocente(Docente docente) async =>
       (await apiPost("/orario/docente", docente))
-          .map((Map obj) => Attivita.fromJson(obj));
+          .map((dynamic obj) => Attivita.fromJson(obj as Map))
+          .cast<Attivita>()
+          .toList();
 
   Future<ApiMessage> about() async =>
       ApiMessage.fromJson(await apiGet("/about"));

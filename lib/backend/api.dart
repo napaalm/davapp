@@ -19,6 +19,7 @@
 
 library api;
 
-export 'api_auth/api_auth.dart';
-export 'api_dav/api_dav.dart';
+export 'api/api_client.dart';
+export 'api/api_auth/api_auth.dart';
+export 'api/api_dav/api_dav.dart';
 export 'gruppi.dart';

@@ -26,8 +26,7 @@ class _StringUriException extends http.ClientException {
 }
 
 class UnauthorizedException extends _StringUriException {
-  UnauthorizedException(String message, [String uri])
-      : super("Errore di autenticazione: " + message, uri);
+  UnauthorizedException(String message, [String uri]) : super(message, uri);
 }
 
 class BadRequestException extends _StringUriException {
@@ -69,7 +68,7 @@ abstract class APIClient {
       return jsonDecode(response.body);
     } else if (response.statusCode == 401) {
       throw UnauthorizedException(response.body, this.apiURL + path);
-    } else if (response.statusCode == 400) {
+    } else if (response.statusCode == 400 || response.statusCode == 404) {
       throw BadRequestException(response.body, this.apiURL + path);
     } else {
       throw InternalServerErrorException(response.body, this.apiURL + path);
@@ -84,7 +83,7 @@ abstract class APIClient {
       return jsonDecode(response.body);
     } else if (response.statusCode == 401) {
       throw UnauthorizedException(response.body, this.apiURL + path);
-    } else if (response.statusCode == 400) {
+    } else if (response.statusCode == 400 || response.statusCode == 404) {
       throw BadRequestException(response.body, this.apiURL + path);
     } else {
       throw InternalServerErrorException(response.body, this.apiURL + path);

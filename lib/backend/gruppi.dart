@@ -22,9 +22,3 @@ enum Gruppo {
   docenti,
   genitori,
 }
-
-const Map<String, Gruppo> gruppi = {
-  "studenti": Gruppo.studenti,
-  "docenti": Gruppo.docenti,
-  "genitori": Gruppo.genitori,
-};
