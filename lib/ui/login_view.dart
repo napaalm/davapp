@@ -18,32 +18,173 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:davapp/backend/api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginView extends StatelessWidget {
+class LoginView extends StatefulWidget {
+  final TextStyle textStyle = TextStyle(fontSize: 20.0);
+
   LoginView({Key key}) : super(key: key);
+
+  @override
+  _LoginViewState createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
+  final formKey = GlobalKey<FormState>();
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  APIAuth apiAuth;
+
+  String username;
+  String password;
+
+  @override
+  void initState() {
+    super.initState();
+    this.apiAuth = APIAuth.instance;
+  }
+
+  void _handleSubmit() async {
+    final form = formKey.currentState;
+    try {
+      apiAuth.username = username;
+      apiAuth.password = password;
+      await apiAuth.login();
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('logged', true);
+      await prefs.setString('username', username);
+      await prefs.setString('password', password);
+
+      Navigator.pushNamedAndRemoveUntil(
+          context, '/home', ModalRoute.withName('/home'));
+    } catch (e) {
+      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(e.message)));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       body: Container(
-        color: Colors.red,
+        padding: EdgeInsets.symmetric(
+          horizontal: (MediaQuery.of(context).size.width <
+                  MediaQuery.of(context).size.height)
+              ? MediaQuery.of(context).size.width * 0.11
+              : MediaQuery.of(context).size.height * 0.11,
+        ),
+        color: Colors.white,
         alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Placeholder(
-              color: Colors.grey,
-            ),
-            Flexible(
-              child: FractionallySizedBox(
-                widthFactor: 0.8,
-                heightFactor: 0.5,
-                child: Container(
-                  color: Colors.white,
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Flexible(
+                child: FractionallySizedBox(
+                  heightFactor: 0.8,
                 ),
               ),
-            ),
-          ],
+              Container(
+                width: (MediaQuery.of(context).size.width <
+                        MediaQuery.of(context).size.height)
+                    ? MediaQuery.of(context).size.width * 0.6
+                    : MediaQuery.of(context).size.height * 0.6,
+                height: (MediaQuery.of(context).size.width <
+                        MediaQuery.of(context).size.height)
+                    ? MediaQuery.of(context).size.width * 0.6
+                    : MediaQuery.of(context).size.height * 0.6,
+                child: Placeholder(), // will be logo
+              ),
+              Flexible(
+                child: FractionallySizedBox(
+                  heightFactor: 0.3,
+                ),
+              ),
+              TextFormField(
+                style: widget.textStyle,
+                cursorColor: Theme.of(context).colorScheme.primary,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.fromLTRB(24.0, 15.0, 24.0, 15.0),
+                  hintText: 'Username',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(32.0)),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 12.0),
+                    child: Icon(Icons.person),
+                  ),
+                ),
+                onSaved: (String value) {
+                  this.username = value;
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Username richiesto';
+                  }
+                  return null;
+                },
+              ),
+              Flexible(
+                child: FractionallySizedBox(
+                  heightFactor: 0.15,
+                ),
+              ),
+              TextFormField(
+                style: widget.textStyle,
+                obscureText: true,
+                cursorColor: Theme.of(context).colorScheme.primary,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.fromLTRB(24.0, 15.0, 24.0, 15.0),
+                  hintText: 'Password',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(32.0)),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 12.0),
+                    child: Icon(Icons.lock),
+                  ),
+                ),
+                onSaved: (String value) {
+                  password = value;
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Password richiesta';
+                  }
+                  return null;
+                },
+              ),
+              Flexible(
+                child: FractionallySizedBox(
+                  heightFactor: 0.20,
+                ),
+              ),
+              Material(
+                elevation: 2.0,
+                borderRadius: BorderRadius.circular(30.0),
+                color: Theme.of(context).colorScheme.primary,
+                child: MaterialButton(
+                  minWidth: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                  onPressed: () async {
+                    var form = formKey.currentState;
+                    if (form.validate()) {
+                      scaffoldKey.currentState.showSnackBar(
+                          SnackBar(content: Text('Accesso al server...')));
+                      form.save();
+                      await _handleSubmit();
+                    }
+                  },
+                  child: Text(
+                    'Accedi',
+                    textAlign: TextAlign.center,
+                    style: widget.textStyle.copyWith(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
