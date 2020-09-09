@@ -19,9 +19,9 @@
 
 import 'package:flutter/material.dart';
 
-var homeBar = AppBar(
-  title: Text('Liceo Da Vinci'),
-);
+AppBar homeBar() => AppBar(
+      title: Text('Liceo Da Vinci'),
+    );
 
 class HomePage extends StatelessWidget {
   HomePage({Key key}) : super(key: key);

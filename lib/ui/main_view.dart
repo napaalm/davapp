@@ -18,7 +18,7 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:davapp/ui/pages/home_page.dart';
+import 'package:davapp/ui/pages.dart';
 
 enum Pagina {
   home,
@@ -88,10 +88,25 @@ class MenuEntry extends StatelessWidget {
 class MainView extends StatefulWidget {
   final Map<Pagina, Widget> pages = {
     Pagina.home: HomePage(),
+    Pagina.comunicatiStudenti: ComunicatiPage(
+      ComunicatiType.studenti,
+    ),
+    Pagina.comunicatiGenitori: ComunicatiPage(
+      ComunicatiType.genitori,
+    ),
+    Pagina.comunicatiDocenti: ComunicatiPage(
+      ComunicatiType.docenti,
+    ),
+    Pagina.impostazioni: SettingsPage(),
   };
 
   final Map<Pagina, Widget> bars = {
-    Pagina.home: homeBar,
+    Pagina.home: homeBar(),
+    Pagina.comunicatiStudenti: comunicatiBar('studenti'),
+    Pagina.comunicatiGenitori: comunicatiBar('genitori'),
+    Pagina.comunicatiDocenti: comunicatiBar('docenti'),
+    Pagina.comunicatiSalvati: comunicatiBar('salvati'),
+    Pagina.impostazioni: settingsBar(),
   };
 
   MainView({Key key}) : super(key: key);
