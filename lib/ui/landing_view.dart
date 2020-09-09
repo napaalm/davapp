@@ -17,6 +17,7 @@
  * along with davapp.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';
 import 'package:davapp/backend/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,11 +31,26 @@ class _LandingViewState extends State<LandingView> {
   @override
   void initState() {
     super.initState();
-    //ensureLoggedIn();
+    initializeApp();
   }
 
-  ensureLoggedIn() async {
+  initializeApp() async {
+    await initializeDateFormatting('it_IT', null);
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (prefs.getString('login_url') == null) {
+      prefs.setString('login_url', 'https://sso.liceodavinci.edu.it');
+    }
+
+    var apiAuth = APIAuth(prefs.getString('login_url'));
+
+    if (prefs.getString('api_url') == null) {
+      prefs.setString('api_url', 'https://liceodavinci.edu.it/api');
+    }
+
+    var a = APIDav(prefs.getString('api_url'), apiAuth);
+
     bool logged = (prefs.getBool('logged') ?? false);
     if (!logged) {
       Navigator.pushNamedAndRemoveUntil(
@@ -43,10 +59,11 @@ class _LandingViewState extends State<LandingView> {
       try {
         var username = prefs.getString('username');
         var password = prefs.getString('password');
-        var url = (prefs.getString('url') ?? 'https://sso.davinci.edu.it');
-        APIAuth(url, username, password).login();
+        apiAuth.username = username;
+        apiAuth.password = password;
+
+        await apiAuth.login();
       } catch (e) {
-        print(e);
         Navigator.pushNamedAndRemoveUntil(
             context, '/login', ModalRoute.withName('/login'));
       }
