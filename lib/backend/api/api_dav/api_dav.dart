@@ -140,8 +140,7 @@ class APIDav extends APIClient {
 
   Future<bool> isOnline() async {
     try {
-      var response =
-          await client.get(this.apiURL + "/teapot", headers: this.headers);
+      var response = await client.get(this.apiURL + "/teapot");
 
       if (response.statusCode == 418) {
         return true;
