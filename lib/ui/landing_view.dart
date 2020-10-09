@@ -23,11 +23,15 @@ import 'package:davapp/backend/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LandingView extends StatefulWidget {
+  LandingView({Key key}) : super(key: key);
+
   @override
   _LandingViewState createState() => _LandingViewState();
 }
 
 class _LandingViewState extends State<LandingView> {
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +39,8 @@ class _LandingViewState extends State<LandingView> {
   }
 
   initializeApp() async {
+    bool firstLaunch = false;
+
     await initializeDateFormatting('it_IT', null);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -47,9 +53,22 @@ class _LandingViewState extends State<LandingView> {
 
     if (prefs.getString('api_url') == null) {
       prefs.setString('api_url', 'https://liceodavinci.edu.it/api');
+      firstLaunch = true;
     }
 
     var a = APIDav(prefs.getString('api_url'), apiAuth);
+
+    while (!firstLaunch) {
+      try {
+        if (await a.isOnline()) {
+          break;
+        }
+      } catch (e) {}
+      scaffoldKey.currentState.showSnackBar(SnackBar(
+          content:
+              Text("Errore di connessione! Nuovo tentativo tra 5 secondi...")));
+      await Future.delayed(Duration(seconds: 5));
+    }
 
     bool logged = (prefs.getBool('logged') ?? false);
     if (!logged) {
@@ -64,8 +83,13 @@ class _LandingViewState extends State<LandingView> {
 
         await apiAuth.login();
       } catch (e) {
+        scaffoldKey.currentState.showSnackBar(SnackBar(
+            content: Text(
+                "Errore di accesso. Reindirizzamento alla pagina di login...")));
+        await Future.delayed(Duration(seconds: 2));
         Navigator.pushNamedAndRemoveUntil(
             context, '/login', ModalRoute.withName('/login'));
+        return;
       }
       Navigator.pushNamedAndRemoveUntil(
           context, '/home', ModalRoute.withName('/home'));
@@ -75,6 +99,7 @@ class _LandingViewState extends State<LandingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       body: Container(
         color: Theme.of(context).colorScheme.primary,
         child: Center(
