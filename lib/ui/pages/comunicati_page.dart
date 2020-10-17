@@ -17,11 +17,14 @@
  * along with davapp.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'dart:typed_data';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:davapp/backend/api.dart';
 import 'package:http/http.dart' as http;
 import 'package:native_pdf_view/native_pdf_view.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 
 enum ComunicatiType {
   studenti,
@@ -31,19 +34,35 @@ enum ComunicatiType {
 }
 
 class ComunicatoView extends StatelessWidget {
-  final Future<PdfDocument> pdfDocumentFuture;
+  final FileInfo fileInfo;
+  final Future<PdfDocument> document;
+  final String name;
+  final String fileName;
+  final bool shareable = true;
 
-  ComunicatoView(this.pdfDocumentFuture);
+  ComunicatoView(this.document, this.fileInfo, this.name, this.fileName);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Comunicato'),
+        actions: this.shareable
+            ? [
+                IconButton(
+                    icon: Icon(Icons.share),
+                    onPressed: () => ShareFilesAndScreenshotWidgets().shareFile(
+                        this.name,
+                        this.fileName,
+                        this.fileInfo.file.readAsBytesSync(),
+                        "application/pdf",
+                        text: this.fileInfo.originalUrl)),
+              ]
+            : null,
       ),
       body: PdfView(
         controller: PdfController(
-          document: this.pdfDocumentFuture,
+          document: this.document,
         ),
       ),
     );
@@ -68,28 +87,25 @@ class LazyComunicatiGenerator {
   Widget getComunicato(BuildContext context, int index) {
     if (index == 0) updateCache();
     try {
-      var comunicato = comunicatiCache[index];
+      final comunicato = comunicatiCache[index];
+      final nameRegExpMatch = this.nameRegExp.firstMatch(comunicato.nome);
+      final comunicatoNumber = nameRegExpMatch?.group(1) ?? '?';
+      final comunicatoName =
+          nameRegExpMatch?.group(2)?.replaceAll('_', ' ') ?? '?';
       return Card(
         child: ListTile(
           leading: AspectRatio(
             aspectRatio: 1.0,
             child: Center(
               child: Text(
-                this.nameRegExp.firstMatch(comunicato.nome)?.group(1) ?? '?',
+                comunicatoNumber,
                 style: DefaultTextStyle.of(context)
                     .style
                     .apply(fontSizeFactor: 1.5),
               ),
             ),
           ),
-          title: Text(
-            this
-                    .nameRegExp
-                    .firstMatch(comunicato.nome ?? '')
-                    ?.group(2)
-                    ?.replaceAll('_', ' ') ??
-                '?',
-          ),
+          title: Text(comunicatoName),
           subtitle:
               Text(dateFormat.format(comunicato.data) ?? 'qualche tempo fa...'),
           trailing: IconButton(
@@ -99,13 +115,40 @@ class LazyComunicatiGenerator {
           isThreeLine: true,
           enabled: true,
           onTap: () async {
-            http.Response response = await http.get(comunicato.url ??
-                'https://www.antonionapolitano.eu/file_not_found.pdf');
+            final fileStream = DefaultCacheManager()
+                .getFileStream(comunicato.url, withProgress: true);
+
+            FileInfo fileInfo;
+
+            final result = await showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text("Apertura documento..."),
+                content: StreamBuilder(
+                    stream: fileStream,
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return LinearProgressIndicator();
+                      }
+                      if (snapshot.data is FileInfo) {
+                        fileInfo = snapshot.data;
+                        Navigator.pop(context);
+                        return LinearProgressIndicator(value: 1.0);
+                      }
+                      return LinearProgressIndicator(
+                          value: snapshot.data.progress);
+                    }),
+              ),
+              barrierDismissible: false,
+            );
+
+            final document = PdfDocument.openFile(fileInfo.file.path);
+
             await Navigator.push(
                 context,
                 PageRouteBuilder(
-                  pageBuilder: (BuildContext context, _, __) =>
-                      ComunicatoView(PdfDocument.openData(response.bodyBytes)),
+                  pageBuilder: (BuildContext context, _, __) => ComunicatoView(
+                      document, fileInfo, comunicatoName, comunicato.nome),
                 ));
           },
         ),
