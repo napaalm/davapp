@@ -86,20 +86,6 @@ class MenuEntry extends StatelessWidget {
 }
 
 class MainView extends StatefulWidget {
-  final Map<Pagina, Widget> pages = {
-    Pagina.home: HomePage(),
-    Pagina.comunicatiStudenti: ComunicatiPage(
-      ComunicatiType.studenti,
-    ),
-    Pagina.comunicatiGenitori: ComunicatiPage(
-      ComunicatiType.genitori,
-    ),
-    Pagina.comunicatiDocenti: ComunicatiPage(
-      ComunicatiType.docenti,
-    ),
-    Pagina.impostazioni: SettingsPage(),
-  };
-
   final Map<Pagina, Widget> bars = {
     Pagina.home: homeBar(),
     Pagina.comunicatiStudenti: comunicatiBar('studenti'),
@@ -118,6 +104,25 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView> {
   Pagina _activePage = Pagina.home;
 
+  Widget _getPage(Pagina page) {
+    switch (page) {
+      case Pagina.home:
+        return HomePage();
+      case Pagina.comunicatiStudenti:
+        return ComunicatiPage(ComunicatiType.studenti);
+      case Pagina.comunicatiGenitori:
+        return ComunicatiPage(ComunicatiType.genitori);
+      case Pagina.comunicatiDocenti:
+        return ComunicatiPage(ComunicatiType.docenti);
+      case Pagina.comunicatiSalvati:
+        return ComunicatiPage(ComunicatiType.salvati);
+      case Pagina.impostazioni:
+        return SettingsPage();
+      default:
+        return Text("y0u 4r3 4 1337 h4x0r");
+    }
+  }
+
   void _handleMenu(Pagina page) {
     setState(() {
       _activePage = page;
@@ -128,7 +133,7 @@ class _MainViewState extends State<MainView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget.bars[_activePage],
-      body: widget.pages[_activePage],
+      body: _getPage(_activePage),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,

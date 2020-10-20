@@ -17,9 +17,12 @@
  * along with davapp.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+//TODO: use a secure storage for the password
+
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';
 import 'package:davapp/backend/api.dart';
+import 'package:davapp/backend/storage/comunicati.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LandingView extends StatefulWidget {
@@ -44,6 +47,8 @@ class _LandingViewState extends State<LandingView> {
     await initializeDateFormatting('it_IT', null);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    ComunicatiStorage storage = await ComunicatiStorage.createInstance();
 
     if (prefs.getString('login_url') == null) {
       prefs.setString('login_url', 'https://sso.liceodavinci.edu.it');

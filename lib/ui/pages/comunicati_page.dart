@@ -17,10 +17,14 @@
  * along with davapp.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+//TODO: add a custom card widget to redraw on saving / reading
+
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:davapp/backend/api.dart';
+import 'package:davapp/backend/storage/comunicati.dart';
 import 'package:http/http.dart' as http;
 import 'package:native_pdf_view/native_pdf_view.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -34,13 +38,13 @@ enum ComunicatiType {
 }
 
 class ComunicatoView extends StatelessWidget {
-  final FileInfo fileInfo;
   final Future<PdfDocument> document;
+  final File file;
+  final Comunicato comunicato;
   final String name;
-  final String fileName;
-  final bool shareable = true;
+  final bool shareable = true; // to be implemented
 
-  ComunicatoView(this.document, this.fileInfo, this.name, this.fileName);
+  ComunicatoView(this.document, this.file, this.comunicato, this.name);
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +57,10 @@ class ComunicatoView extends StatelessWidget {
                     icon: Icon(Icons.share),
                     onPressed: () => ShareFilesAndScreenshotWidgets().shareFile(
                         this.name,
-                        this.fileName,
-                        this.fileInfo.file.readAsBytesSync(),
+                        this.comunicato.nome,
+                        this.file.readAsBytesSync(),
                         "application/pdf",
-                        text: this.fileInfo.originalUrl)),
+                        text: this.comunicato.url)),
               ]
             : null,
       ),
@@ -69,58 +73,72 @@ class ComunicatoView extends StatelessWidget {
   }
 }
 
-class LazyComunicatiGenerator {
+class ComunicatoCard extends StatefulWidget {
+  Comunicato comunicato;
+  String comunicatoNumber;
+  String comunicatoName;
+
   final RegExp nameRegExp = RegExp(r'^([0-9]*)-(.*)\.pdf');
   final DateFormat dateFormat = DateFormat.yMMMMd('it_IT').add_Hm();
 
-  final Function(int) comunicatiGetter;
-  List<Comunicato> comunicatiCache;
-
-  LazyComunicatiGenerator(this.comunicatiGetter) {
-    updateCache(20);
+  ComunicatoCard(this.comunicato, {Key key}) : super(key: key) {
+    final nameRegExpMatch = this.nameRegExp.firstMatch(this.comunicato.nome);
+    this.comunicatoNumber = nameRegExpMatch?.group(1) ?? '?';
+    this.comunicatoName =
+        nameRegExpMatch?.group(2)?.replaceAll('_', ' ') ?? '?';
   }
 
-  void updateCache([int number]) async {
-    this.comunicatiCache = await this.comunicatiGetter(number);
-  }
+  @override
+  _ComunicatoCardState createState() => _ComunicatoCardState(comunicato);
+}
 
-  Widget getComunicato(BuildContext context, int index) {
-    if (index == 0) updateCache();
-    try {
-      final comunicato = comunicatiCache[index];
-      final nameRegExpMatch = this.nameRegExp.firstMatch(comunicato.nome);
-      final comunicatoNumber = nameRegExpMatch?.group(1) ?? '?';
-      final comunicatoName =
-          nameRegExpMatch?.group(2)?.replaceAll('_', ' ') ?? '?';
-      return Card(
-        child: ListTile(
-          leading: AspectRatio(
-            aspectRatio: 1.0,
-            child: Center(
-              child: Text(
-                comunicatoNumber,
-                style: DefaultTextStyle.of(context)
-                    .style
-                    .apply(fontSizeFactor: 1.5),
-              ),
+class _ComunicatoCardState extends State<ComunicatoCard> {
+  bool isSaved;
+
+  _ComunicatoCardState(Comunicato comunicato)
+      : this.isSaved = ComunicatiStorage.instance.isSaved(comunicato);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: AspectRatio(
+          aspectRatio: 1.0,
+          child: Center(
+            child: Text(
+              widget.comunicatoNumber,
+              style:
+                  DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.5),
             ),
           ),
-          title: Text(comunicatoName),
-          subtitle:
-              Text(dateFormat.format(comunicato.data) ?? 'qualche tempo fa...'),
-          trailing: IconButton(
-            icon: Icon(Icons.save_alt),
-            onPressed: () {},
-          ),
-          isThreeLine: true,
-          enabled: true,
-          onTap: () async {
+        ),
+        title: Text(widget.comunicatoName),
+        subtitle: Text(widget.dateFormat.format(widget.comunicato.data) ??
+            'qualche tempo fa...'),
+        trailing: IconButton(
+          icon: this.isSaved ? Icon(Icons.check) : Icon(Icons.save_alt),
+          onPressed: this.isSaved
+              ? () {
+                  ComunicatiStorage.instance.remove(widget.comunicato);
+                  setState(() => this.isSaved = false);
+                }
+              : () {
+                  ComunicatiStorage.instance.save(widget.comunicato);
+                  setState(() => this.isSaved = true);
+                },
+        ),
+        isThreeLine: true,
+        enabled: true,
+        onTap: () async {
+          File file;
+          if (this.isSaved) {
+            final path = ComunicatiStorage.instance.getPath(widget.comunicato);
+            file = File(path);
+          } else {
             final fileStream = DefaultCacheManager()
-                .getFileStream(comunicato.url, withProgress: true);
-
+                .getFileStream(widget.comunicato.url, withProgress: true);
             FileInfo fileInfo;
-
-            final result = await showDialog(
+            await showDialog(
               context: context,
               builder: (context) => AlertDialog(
                 title: Text("Apertura documento..."),
@@ -141,18 +159,39 @@ class LazyComunicatiGenerator {
               ),
               barrierDismissible: false,
             );
+            file = fileInfo.file;
+          }
 
-            final document = PdfDocument.openFile(fileInfo.file.path);
+          final document = PdfDocument.openFile(file.path);
 
-            await Navigator.push(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (BuildContext context, _, __) => ComunicatoView(
-                      document, fileInfo, comunicatoName, comunicato.nome),
-                ));
-          },
-        ),
-      );
+          await Navigator.push(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (BuildContext context, _, __) => ComunicatoView(
+                    document, file, widget.comunicato, widget.comunicatoName),
+              ));
+        },
+      ),
+    );
+  }
+}
+
+class LazyComunicatiGenerator {
+  final Function(int) comunicatiGetter;
+  List<Comunicato> comunicatiCache = [];
+
+  LazyComunicatiGenerator(this.comunicatiGetter) {
+    updateCache(20);
+  }
+
+  void updateCache([int number]) async {
+    this.comunicatiCache = await this.comunicatiGetter(number);
+  }
+
+  Widget getComunicato(BuildContext context, int index) {
+    if (index == 0) updateCache();
+    try {
+      return ComunicatoCard(comunicatiCache[index]);
     } on RangeError {
       return null;
     }
@@ -170,6 +209,7 @@ class ComunicatiPage extends StatefulWidget {
     ComunicatiType.studenti: APIDav.instance.comunicatiStudenti,
     ComunicatiType.genitori: APIDav.instance.comunicatiGenitori,
     ComunicatiType.docenti: APIDav.instance.comunicatiDocenti,
+    ComunicatiType.salvati: ComunicatiStorage.instance.getList,
   };
 
   ComunicatiPage(ComunicatiType comunicatiType, {Key key}) : super(key: key) {
@@ -182,6 +222,8 @@ class ComunicatiPage extends StatefulWidget {
 }
 
 class _ComunicatiPageState extends State<ComunicatiPage> {
+  final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+
   Future<void> refreshList() async {
     await widget.lazyComunicatiGenerator.updateCache();
     setState(() {});
@@ -190,10 +232,29 @@ class _ComunicatiPageState extends State<ComunicatiPage> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
+      key: _refreshIndicatorKey,
       onRefresh: refreshList,
       child: ListView.builder(
         itemBuilder: widget.lazyComunicatiGenerator.getComunicato,
       ),
     );
+  }
+
+  // hacky hack to reload the page automatically upon opening
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      this._refreshIndicatorKey.currentState.show();
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant ComunicatiPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      this._refreshIndicatorKey.currentState.show();
+    });
   }
 }

@@ -25,6 +25,12 @@ const Map<String, Gruppo> gruppi = {
   "genitori": Gruppo.genitori,
 };
 
+const Map<Gruppo, String> gruppiInverse = {
+  Gruppo.studenti: "studenti",
+  Gruppo.docenti: "docenti",
+  Gruppo.genitori: "genitori",
+};
+
 class ApiMessage {
   int codice;
   String info;
@@ -55,6 +61,26 @@ class Comunicato {
       url: item['url'],
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      "nome": this.nome,
+      "data": this.data.microsecondsSinceEpoch,
+      "tipo": gruppiInverse[this.tipo],
+      "url": this.url,
+    };
+  }
+
+  Comunicato.fromMap(Map<String, dynamic> map) {
+    this.nome = map["nome"];
+    this.data = DateTime.fromMicrosecondsSinceEpoch(map["data"]);
+    this.tipo = gruppi[map["tipo"]];
+    this.url = map["url"];
+  }
+
+  @override
+  String toString() =>
+      "Comunicato($nome, ${data.toString()}, ${gruppiInverse[tipo]}, $url)";
 }
 
 class Docente {
