@@ -17,8 +17,6 @@
  * along with davapp.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-//TODO: add a custom card widget to redraw on saving / reading
-
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:intl/intl.dart';
@@ -180,16 +178,18 @@ class LazyComunicatiGenerator {
   final Function(int) comunicatiGetter;
   List<Comunicato> comunicatiCache = [];
 
-  LazyComunicatiGenerator(this.comunicatiGetter) {
-    updateCache(20);
+  LazyComunicatiGenerator(this.comunicatiGetter);
+
+  void refresh() async {
+    await _updateCache(20);
+    _updateCache();
   }
 
-  void updateCache([int number]) async {
+  void _updateCache([int number]) async {
     this.comunicatiCache = await this.comunicatiGetter(number);
   }
 
   Widget getComunicato(BuildContext context, int index) {
-    if (index == 0) updateCache();
     try {
       return ComunicatoCard(comunicatiCache[index]);
     } on RangeError {
@@ -223,9 +223,10 @@ class ComunicatiPage extends StatefulWidget {
 
 class _ComunicatiPageState extends State<ComunicatiPage> {
   final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  bool firstLoading = true;
 
   Future<void> refreshList() async {
-    await widget.lazyComunicatiGenerator.updateCache();
+    await widget.lazyComunicatiGenerator.refresh();
     setState(() {});
   }
 
