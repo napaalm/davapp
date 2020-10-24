@@ -23,7 +23,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';
 import 'package:davapp/backend/api.dart';
 import 'package:davapp/backend/storage/comunicati.dart';
+import 'package:davapp/ui/pages/about_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:package_info/package_info.dart';
 
 class LandingView extends StatefulWidget {
   LandingView({Key key}) : super(key: key);
@@ -43,6 +45,10 @@ class _LandingViewState extends State<LandingView> {
 
   initializeApp() async {
     bool firstLaunch = false;
+
+    packageInfo = await PackageInfo.fromPlatform();
+    version = packageInfo.version;
+    buildNumber = packageInfo.buildNumber;
 
     await initializeDateFormatting('it_IT', null);
 
