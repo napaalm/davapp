@@ -22,6 +22,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:validators/validators.dart';
+import 'package:theme_provider/theme_provider.dart';
 import 'package:davapp/backend/api.dart';
 
 Map<Gruppo, String> groupNames = {
@@ -176,6 +177,22 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
           ),
+        ),
+        ListTile(
+          title: Text(
+            'Aspetto',
+          ),
+          enabled: false,
+          dense: true,
+        ),
+        ListTile(
+          title: Text('Tema applicazione'),
+          subtitle: Text('Cambia il tema predefinito'),
+          onTap: () {
+            showDialog(
+                context: context,
+                builder: (_) => ThemeConsumer(child: ThemeDialog()));
+          },
         ),
         ListTile(
           title: Text(

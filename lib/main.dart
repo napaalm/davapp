@@ -21,6 +21,8 @@ import 'package:flutter/material.dart';
 import 'package:davapp/ui/main_view.dart';
 import 'package:davapp/ui/landing_view.dart';
 import 'package:davapp/ui/login_view.dart';
+import 'package:theme_provider/theme_provider.dart';
+import 'package:flutter/scheduler.dart';
 
 void main() {
   runApp(DavApp());
@@ -29,16 +31,50 @@ void main() {
 class DavApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'davapp',
-        theme: ThemeData(
-          primarySwatch: Colors.red,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
+    return ThemeProvider(
+      saveThemesOnChange: true,
+      onInitCallback: (controller, previouslySavedThemeFuture) async {
+        String savedTheme = await previouslySavedThemeFuture;
+        if (savedTheme != null) {
+          controller.setTheme(savedTheme);
+        }
+      },
+      themes: [
+        AppTheme(
+          id: "light_theme",
+          description: "Tema chiaro",
+          data: ThemeData(
+            primarySwatch: Colors.red,
+            primaryColorLight: Colors.white,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
         ),
-        routes: {
-          '/': (context) => LandingView(),
-          '/login': (context) => LoginView(),
-          '/home': (context) => MainView(),
-        });
+        AppTheme(
+          id: "dark_theme",
+          description: "Tema scuro",
+          data: ThemeData(
+            primarySwatch: Colors.red,
+            brightness: Brightness.dark,
+            accentColor: Colors.red,
+            accentColorBrightness: Brightness.light,
+            primaryColorLight: Colors.white,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+        ),
+      ],
+      child: ThemeConsumer(
+        child: Builder(
+          builder: (themeContext) => MaterialApp(
+            title: 'davapp',
+            routes: {
+              '/': (context) => LandingView(),
+              '/login': (context) => LoginView(),
+              '/home': (context) => MainView(),
+            },
+            theme: ThemeProvider.themeOf(themeContext).data,
+          ),
+        ),
+      ),
+    );
   }
 }

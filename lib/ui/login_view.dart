@@ -74,7 +74,6 @@ class _LoginViewState extends State<LoginView> {
               ? MediaQuery.of(context).size.width * 0.11
               : MediaQuery.of(context).size.height * 0.11,
         ),
-        color: Colors.white,
         alignment: Alignment.center,
         child: Form(
           key: formKey,
