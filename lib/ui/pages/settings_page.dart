@@ -17,8 +17,11 @@
  * along with davapp.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+//TODO: make a function to send the author an email with the app log
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:validators/validators.dart';
 import 'package:davapp/backend/api.dart';
 
 Map<Gruppo, String> groupNames = {
@@ -31,6 +34,79 @@ AppBar settingsBar() => AppBar(
       title: Text('Impostazioni'),
     );
 
+class ServerAddressDialog extends StatelessWidget {
+  final formKey = GlobalKey<FormState>();
+  final SharedPreferences prefs;
+
+  ServerAddressDialog(this.prefs, {Key key}) : super(key: key);
+
+  String validate(String url) {
+    if (url.isEmpty) {
+      return 'Inserisci un URL';
+    }
+    if (!isURL(url, protocols: ['http', 'https'])) {
+      return 'Inserisci un URL valido!';
+    }
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Modifica indirizzi server'),
+      content: SingleChildScrollView(
+        child: Form(
+          key: formKey,
+          child: ListBody(
+            children: <Widget>[
+              TextFormField(
+                initialValue: APIDav.instance.apiURL,
+                decoration: InputDecoration(
+                  labelText: 'Indirizzo server webapi-dav',
+                ),
+                onSaved: (String value) {
+                  prefs.setString('api_url', value);
+                  APIDav.instance.url = value;
+                },
+                validator: validate,
+              ),
+              TextFormField(
+                initialValue: APIAuth.instance.apiURL,
+                decoration: InputDecoration(
+                  labelText: 'Indirizzo server di autenticazione',
+                ),
+                onSaved: (String value) {
+                  prefs.setString('login_url', value);
+                  APIAuth.instance.url = value;
+                },
+                validator: validate,
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text('Annulla'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: Text('Salva'),
+          onPressed: () {
+            final form = formKey.currentState;
+            if (form.validate()) {
+              form.save();
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+      ],
+    );
+  }
+}
+
 class SettingsPage extends StatefulWidget {
   final RegExp initials = RegExp(r"\B[a-zA-Z]*|[^a-zA-Z]*");
 
@@ -42,12 +118,15 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   APIAuth apiAuth;
+  APIDav apiDav;
   SharedPreferences prefs;
+
   @override
   void initState() {
     super.initState();
     loadPreferences();
     this.apiAuth = APIAuth.instance;
+    this.apiDav = APIDav.instance;
   }
 
   void loadPreferences() async {
@@ -106,18 +185,17 @@ class _SettingsPageState extends State<SettingsPage> {
           dense: true,
         ),
         ListTile(
-          subtitle: TextField(
-            decoration: InputDecoration(
-              labelText: 'Indirizzo webapi',
-            ),
-          ),
-        ),
-        ListTile(
-          subtitle: TextField(
-            decoration: InputDecoration(
-              labelText: 'Indirizzo server di autenticazione',
-            ),
-          ),
+          title: Text('Modifica server'),
+          subtitle:
+              Text('Specifica gli indirizzi dei server per l\'applicazione'),
+          onTap: () {
+            showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return ServerAddressDialog(prefs);
+              },
+            );
+          },
         ),
       ],
     );
