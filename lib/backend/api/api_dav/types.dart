@@ -170,3 +170,11 @@ class AgendaEvent {
     );
   }
 }
+
+class NewsElement {
+  String title;
+  String imageUrl;
+  String articleUrl;
+
+  NewsElement(this.title, this.imageUrl, this.articleUrl);
+}

@@ -21,6 +21,8 @@ import 'dart:convert';
 import 'package:davapp/backend/api.dart';
 import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart' as jose;
+import 'package:html/parser.dart' show parse;
+import 'package:html/dom.dart';
 
 part 'types.dart';
 
@@ -130,6 +132,19 @@ class APIDav extends APIClient {
       (await apiPost("/orario/docente", docente))
           .map((dynamic obj) => Attivita.fromJson(obj as Map))
           .cast<Attivita>()
+          .toList();
+
+  Future<List<NewsElement>> news() async =>
+      parse((await client.get(apiURL + "/../sitoLiceo")).body)
+          .querySelector('ul.sprocket-features-img-list')
+          .children
+          .map((el) => NewsElement(
+                el.children[1].children[0].text,
+                apiURL +
+                    "/../" +
+                    el.children[0].children[0].children[0].attributes['src'],
+                apiURL + "/../" + el.children[0].children[0].attributes['href'],
+              ))
           .toList();
 
   Future<ApiMessage> about() async =>
