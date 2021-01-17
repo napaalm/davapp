@@ -30,7 +30,7 @@ class APIDav extends APIClient {
   static APIDav _instance;
   APIAuth auth;
 
-  final RegExp regexClasse = RegExp(r"^[1-5][a-zA-Z]\$");
+  final RegExp regexClasse = RegExp(r"^[1-5][a-zA-Z]$");
 
   static get instance {
     if (_instance != null) {
@@ -143,7 +143,7 @@ class APIDav extends APIClient {
                 apiURL +
                     "/../" +
                     el.children[0].children[0].children[0].attributes['src'],
-                apiURL + "/../" + el.children[0].children[0].attributes['href'],
+                apiURL + "/.." + el.children[0].children[0].attributes['href'],
               ))
           .toList();
 
