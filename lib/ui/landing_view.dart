@@ -24,6 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:davapp/backend/api.dart';
 import 'package:davapp/backend/storage/comunicati.dart';
 import 'package:davapp/ui/pages/about_page.dart';
+import 'package:davapp/ui/pages/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info/package_info.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -37,6 +38,7 @@ class LandingView extends StatefulWidget {
 
 class _LandingViewState extends State<LandingView> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  SharedPreferences prefs;
 
   @override
   void initState() {
@@ -46,6 +48,7 @@ class _LandingViewState extends State<LandingView> {
 
   initializeApp() async {
     bool firstLaunch = false;
+    prefs = await SharedPreferences.getInstance();
 
     packageInfo = await PackageInfo.fromPlatform();
     version = packageInfo.version;
@@ -77,8 +80,20 @@ class _LandingViewState extends State<LandingView> {
         }
       } catch (e) {}
       scaffoldKey.currentState.showSnackBar(SnackBar(
-          content:
-              Text("Errore di connessione! Nuovo tentativo tra 5 secondi...")));
+        content:
+            Text("Errore di connessione! Nuovo tentativo tra 5 secondi..."),
+        action: SnackBarAction(
+          label: 'Impostazioni',
+          onPressed: () {
+            showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return ServerAddressDialog(prefs);
+              },
+            );
+          },
+        ),
+      ));
       await Future.delayed(Duration(seconds: 5));
     }
 

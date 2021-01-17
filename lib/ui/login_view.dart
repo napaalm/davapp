@@ -19,6 +19,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:davapp/backend/api.dart';
+import 'package:davapp/ui/pages/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -35,6 +36,7 @@ class _LoginViewState extends State<LoginView> {
   final formKey = GlobalKey<FormState>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   APIAuth apiAuth;
+  SharedPreferences prefs;
 
   String username;
   String password;
@@ -43,6 +45,11 @@ class _LoginViewState extends State<LoginView> {
   void initState() {
     super.initState();
     this.apiAuth = APIAuth.instance;
+    loadSharedPreferences();
+  }
+
+  void loadSharedPreferences() async {
+    prefs = await SharedPreferences.getInstance();
   }
 
   void _handleSubmit() async {
@@ -52,7 +59,6 @@ class _LoginViewState extends State<LoginView> {
       apiAuth.password = password;
       await apiAuth.login();
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('logged', true);
       await prefs.setString('username', username);
       await prefs.setString('password', password);
@@ -60,7 +66,20 @@ class _LoginViewState extends State<LoginView> {
       Navigator.pushNamedAndRemoveUntil(
           context, '/home', ModalRoute.withName('/home'));
     } catch (e) {
-      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(e.message)));
+      scaffoldKey.currentState.showSnackBar(SnackBar(
+        content: Text(e.message),
+        action: SnackBarAction(
+          label: 'Impostazioni',
+          onPressed: () {
+            showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return ServerAddressDialog(prefs);
+              },
+            );
+          },
+        ),
+      ));
     }
   }
 
