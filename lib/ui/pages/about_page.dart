@@ -42,7 +42,7 @@ class AboutPage extends StatelessWidget {
         child: SvgPicture.asset('assets/icon/logo_round.svg',
             semanticsLabel: 'Logo dell\'applicazione'),
       ),
-      applicationLegalese: 'Copyright © Antonio Napolitano, 2020',
+      applicationLegalese: 'Copyright © Antonio Napolitano, 2020-2021',
       applicationDescription: Text(
           'Applicazione ufficiale del Liceo Scientifico Statale "Leonardo Da Vinci" di Treviso.'),
       children: <Widget>[
