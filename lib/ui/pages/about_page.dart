@@ -63,12 +63,11 @@ class AboutPage extends StatelessWidget {
             onTap: () {
               launch('https://www.antonionapolitano.eu/');
             }),
-        ListTile(
-            leading: Icon(Icons.attach_money),
-            title: Text('Sostieni lo sviluppo'),
-            onTap: () {
-              launch('https://www.antonionapolitano.eu/donate');
-            }),
+//        ListTile(
+//            leading: Icon(Icons.attach_money),
+//            title: Text('Sostieni lo sviluppo'),
+//            onTap: () {
+//            }),
         LicensesPageListTile(
           title: Text('Licenze open source'),
           icon: Icon(Icons.favorite),
