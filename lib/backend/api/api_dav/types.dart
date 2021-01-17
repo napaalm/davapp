@@ -31,6 +31,46 @@ const Map<Gruppo, String> gruppiInverse = {
   Gruppo.genitori: "genitori",
 };
 
+const Map<int, int> oraOrdinale = {
+  08: 1,
+  09: 2,
+  10: 3,
+  11: 4,
+  12: 5,
+  13: 6,
+  14: 7,
+};
+
+enum Giorno {
+  lunedi,
+  martedi,
+  mercoledi,
+  giovedi,
+  venerdi,
+  sabato,
+  domenica,
+}
+
+const Map<String, Giorno> giorni = {
+  "lunedì": Giorno.lunedi,
+  "martedì": Giorno.martedi,
+  "mercoledì": Giorno.mercoledi,
+  "giovedì": Giorno.giovedi,
+  "venerdì": Giorno.venerdi,
+  "sabato": Giorno.sabato,
+  "domenica": Giorno.domenica,
+};
+
+const Map<Giorno, String> giorniInverse = {
+  Giorno.lunedi: "lunedì",
+  Giorno.martedi: "martedì",
+  Giorno.mercoledi: "mercoledì",
+  Giorno.giovedi: "giovedì",
+  Giorno.venerdi: "venerdì",
+  Giorno.sabato: "sabato",
+  Giorno.domenica: "domenica",
+};
+
 class ApiMessage {
   int codice;
   String info;
@@ -83,7 +123,7 @@ class Comunicato {
       "Comunicato($nome, ${data.toString()}, ${gruppiInverse[tipo]}, $url)";
 }
 
-class Docente {
+class Docente implements Comparable<Docente> {
   String nome;
   String cognome;
 
@@ -96,61 +136,93 @@ class Docente {
     );
   }
 
+  factory Docente.fromStringList(List<String> item) {
+    return Docente(
+      nome: item[0],
+      cognome: item[1],
+    );
+  }
+
+  @override
+  int compareTo(Docente other) {
+    if (other.nome == this.nome && other.cognome == this.cognome) return 0;
+    if (other.cognome.compareTo(this.cognome) < 0 ||
+        other.cognome == this.cognome && other.nome.compareTo(this.nome) < 0)
+      return 1;
+    return -1;
+  }
+
+  @override
+  String toString() => "${cognome} ${nome}";
+
   Map toJson() => {"nome": nome, "cognome": cognome};
+
+  List<String> toStringList() => [nome, cognome];
+}
+
+class TimeSpan {
+  Duration _inizio;
+  Duration _durata;
+  Giorno giorno;
+
+  TimeSpan(this.giorno, this._inizio, this._durata);
+
+  factory TimeSpan.fromString(String giorno, String inizio, String durata) {
+    List<int> inizioSplit = inizio.split('h').map(int.parse).toList();
+    List<int> durataSplit = durata.split('h').map(int.parse).toList();
+    return TimeSpan(
+        giorni[giorno],
+        Duration(hours: inizioSplit[0], minutes: inizioSplit[1]),
+        Duration(hours: durataSplit[0], minutes: durataSplit[1]));
+  }
+
+  int get ordinale => oraOrdinale[_inizio.inHours];
+  String get inizio => _inizio.toString().split(':00.')[0];
+  int get durata => _durata.inHours;
+  String get durataFormat => '${durata}h';
+
+  @override
+  String toString() {
+    return '${giorniInverse[giorno]} ${inizio} ${durataFormat}';
+  }
 }
 
 class Attivita {
   int id;
-  String durata;
+  TimeSpan orario;
   String mat_cod;
   String materia;
   Docente docente;
   String classe;
   String aula;
-  String giorno;
-  String inizio;
   String sede;
 
   Attivita(
       {this.id,
-      this.durata,
+      this.orario,
       this.mat_cod,
       this.materia,
       this.docente,
       this.classe,
       this.aula,
-      this.giorno,
-      this.inizio,
       this.sede});
 
   factory Attivita.fromJson(Map<String, dynamic> item) {
     return Attivita(
       id: item['id'],
-      durata: item['durata'],
+      orario:
+          TimeSpan.fromString(item['giorno'], item['inizio'], item['durata']),
       mat_cod: item['mat_cod'],
       materia: item['materia'],
       docente: Docente(nome: item['doc_nome'], cognome: item['doc_cognome']),
       classe: item['classe'],
       aula: item['aula'],
-      giorno: item['giorno'],
-      inizio: item['inizio'],
       sede: item['sede'],
     );
   }
-}
 
-class Orario {
-  String nome;
-  Attivita attivita;
-
-  Orario({this.nome, this.attivita});
-
-  factory Orario.fromJson(Map<String, dynamic> item) {
-    return Orario(
-      nome: item['nome'],
-      attivita: Attivita.fromJson(item['attivita']),
-    );
-  }
+  @override
+  String toString() => "$orario: $materia";
 }
 
 class AgendaEvent {
