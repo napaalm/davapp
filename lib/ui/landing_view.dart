@@ -26,6 +26,7 @@ import 'package:davapp/backend/storage/comunicati.dart';
 import 'package:davapp/ui/pages/about_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info/package_info.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LandingView extends StatefulWidget {
   LandingView({Key key}) : super(key: key);
@@ -127,7 +128,8 @@ class _LandingViewState extends State<LandingView> {
                         MediaQuery.of(context).size.height)
                     ? MediaQuery.of(context).size.width * 0.7
                     : MediaQuery.of(context).size.height * 0.7,
-                child: Placeholder(), // will be logo
+                child: SvgPicture.asset('assets/icon/logo_rect.svg',
+                    semanticsLabel: 'Logo dell\'applicazione'),
               ),
               Flexible(
                 child: FractionallySizedBox(

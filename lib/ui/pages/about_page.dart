@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:about/about.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 PackageInfo packageInfo;
 String version;
@@ -38,7 +39,8 @@ class AboutPage extends StatelessWidget {
       applicationIcon: SizedBox(
         width: 100,
         height: 100,
-        child: FlutterLogo(),
+        child: SvgPicture.asset('assets/icon/logo_round.svg',
+            semanticsLabel: 'Logo dell\'applicazione'),
       ),
       applicationLegalese: 'Copyright © Antonio Napolitano, 2020',
       applicationDescription: Text(

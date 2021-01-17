@@ -20,6 +20,7 @@
 import 'package:flutter/material.dart';
 import 'package:davapp/backend/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginView extends StatefulWidget {
   final TextStyle textStyle = TextStyle(fontSize: 20.0);
@@ -94,7 +95,8 @@ class _LoginViewState extends State<LoginView> {
                         MediaQuery.of(context).size.height)
                     ? MediaQuery.of(context).size.width * 0.6
                     : MediaQuery.of(context).size.height * 0.6,
-                child: Placeholder(), // will be logo
+                child: SvgPicture.asset('assets/icon/logo_round.svg',
+                    semanticsLabel: 'Logo dell\'applicazione'),
               ),
               Flexible(
                 child: FractionallySizedBox(

@@ -41,6 +41,7 @@ dependencies:
   theme_provider: ^0.4.0+1
   html: ^0.14.0+4
   carousel_slider: ^2.3.1
+  flutter_svg: ^0.19.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -49,6 +50,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.8.0"
+
+flutter_icons:
+  ios: true
+  android: true
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#c63f36"
+  adaptive_icon_foreground: "assets/icon/adaptive.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -63,6 +72,8 @@ flutter:
 
   assets:
     - assets/LICENSE.md
+    - assets/icon/logo_rect.svg
+    - assets/icon/logo_round.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

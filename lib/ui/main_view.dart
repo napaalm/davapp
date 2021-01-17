@@ -19,6 +19,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:davapp/ui/pages.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 enum Pagina {
   home,
@@ -142,8 +143,12 @@ class _MainViewState extends State<MainView> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              child: Placeholder(
-                color: Colors.grey,
+              padding: EdgeInsets.all(0.0),
+              child: Container(
+                color: Theme.of(context).colorScheme.primary,
+                padding: EdgeInsets.all(20.0),
+                child: SvgPicture.asset('assets/icon/logo_rect.svg',
+                    semanticsLabel: 'Logo applicazione'),
               ),
             ),
             MenuEntry(
