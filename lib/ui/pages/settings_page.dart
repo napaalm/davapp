@@ -25,6 +25,9 @@ import 'package:validators/validators.dart';
 import 'package:theme_provider/theme_provider.dart';
 import 'package:davapp/backend/api.dart';
 
+const defaultAPIURL = 'http://liceodavinci.edu.it/api';
+const defaultAuthURL = 'https://sso.davapi.antonionapolitano.eu';
+
 Map<Gruppo, String> groupNames = {
   Gruppo.studenti: "Studente",
   Gruppo.docenti: "Docente",
@@ -38,8 +41,17 @@ AppBar settingsBar() => AppBar(
 class ServerAddressDialog extends StatelessWidget {
   final formKey = GlobalKey<FormState>();
   final SharedPreferences prefs;
+  final _APITextFieldController = TextEditingController();
+  final _AuthTextFieldController = TextEditingController();
 
-  ServerAddressDialog(this.prefs, {Key key}) : super(key: key);
+  ServerAddressDialog(this.prefs, {Key key}) : super(key: key) {
+    _APITextFieldController.value = _APITextFieldController.value.copyWith(
+      text: APIDav.instance.apiURL,
+    );
+    _AuthTextFieldController.value = _AuthTextFieldController.value.copyWith(
+      text: APIAuth.instance.apiURL,
+    );
+  }
 
   String validate(String url) {
     if (url.isEmpty) {
@@ -61,7 +73,7 @@ class ServerAddressDialog extends StatelessWidget {
           child: ListBody(
             children: <Widget>[
               TextFormField(
-                initialValue: APIDav.instance.apiURL,
+                controller: _APITextFieldController,
                 decoration: InputDecoration(
                   labelText: 'Indirizzo server webapi-dav',
                 ),
@@ -72,7 +84,7 @@ class ServerAddressDialog extends StatelessWidget {
                 validator: validate,
               ),
               TextFormField(
-                initialValue: APIAuth.instance.apiURL,
+                controller: _AuthTextFieldController,
                 decoration: InputDecoration(
                   labelText: 'Indirizzo server di autenticazione',
                 ),
@@ -87,6 +99,13 @@ class ServerAddressDialog extends StatelessWidget {
         ),
       ),
       actions: <Widget>[
+        TextButton(
+          child: Text('Predefiniti'),
+          onPressed: () {
+            _APITextFieldController.text = defaultAPIURL;
+            _AuthTextFieldController.text = defaultAuthURL;
+          },
+        ),
         TextButton(
           child: Text('Annulla'),
           onPressed: () {
