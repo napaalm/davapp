@@ -17,8 +17,6 @@
  * along with davapp.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-//TODO: use a secure storage for the password
-
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';
 import 'package:davapp/backend/api.dart';
@@ -26,6 +24,7 @@ import 'package:davapp/backend/storage/comunicati.dart';
 import 'package:davapp/ui/pages/about_page.dart';
 import 'package:davapp/ui/pages/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:package_info/package_info.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -44,6 +43,7 @@ class _LandingViewState extends State<LandingView> {
   APIDav apiDav;
   APIAuth apiAuth;
   SharedPreferences prefs;
+  final secureStorage = FlutterSecureStorage();
 
   @override
   void initState() {
@@ -111,8 +111,8 @@ class _LandingViewState extends State<LandingView> {
           context, '/login', ModalRoute.withName('/login'));
     } else {
       try {
-        apiAuth.username = await prefs.getString('username');
-        apiAuth.password = await prefs.getString('password');
+        apiAuth.username = await secureStorage.read(key: 'username');
+        apiAuth.password = await secureStorage.read(key: 'password');
 
         await apiAuth.login();
       } catch (e) {

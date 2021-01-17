@@ -21,6 +21,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:validators/validators.dart';
 import 'package:theme_provider/theme_provider.dart';
 import 'package:davapp/backend/api.dart';
@@ -184,6 +185,7 @@ class _SettingsPageState extends State<SettingsPage> {
               trailing: PopupMenuButton<bool>(
                 onSelected: (bool result) async {
                   await prefs.setBool('logged', false);
+                  await FlutterSecureStorage().deleteAll();
                   Navigator.pushNamedAndRemoveUntil(
                       context, '/login', ModalRoute.withName('/login'));
                 },

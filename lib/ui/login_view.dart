@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:davapp/backend/api.dart';
 import 'package:davapp/ui/pages/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginView extends StatefulWidget {
@@ -37,6 +38,7 @@ class _LoginViewState extends State<LoginView> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   APIAuth apiAuth;
   SharedPreferences prefs;
+  final secureStorage = FlutterSecureStorage();
 
   String username;
   String password;
@@ -59,8 +61,8 @@ class _LoginViewState extends State<LoginView> {
       apiAuth.password = password;
       await apiAuth.login();
 
-      await prefs.setString('username', username);
-      await prefs.setString('password', password);
+      await secureStorage.write(key: 'username', value: username);
+      await secureStorage.write(key: 'password', value: password);
       await prefs.setBool('logged', true);
 
       Navigator.pushNamedAndRemoveUntil(
