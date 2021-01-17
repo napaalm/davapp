@@ -24,7 +24,7 @@ import 'package:davapp/backend/api.dart';
 
 enum Pagina {
   home,
-  agenda,
+//  agenda,
   orari,
   comunicatiStudenti,
   comunicatiGenitori,
@@ -190,14 +190,14 @@ class _MainViewState extends State<MainView> {
               isSeparator: true,
               label: 'Attività',
             ),
-            MenuEntry(
-              label: 'Agenda del liceo',
-              page: Pagina.agenda,
-              iconData: Icons.event,
-              semanticLabel: 'Agenda del liceo',
-              selected: (_activePage == Pagina.agenda),
-              handleMenu: _handleMenu,
-            ),
+//            MenuEntry(
+//              label: 'Agenda del liceo',
+//              page: Pagina.agenda,
+//              iconData: Icons.event,
+//              semanticLabel: 'Agenda del liceo',
+//              selected: (_activePage == Pagina.agenda),
+//              handleMenu: _handleMenu,
+//            ),
             MenuEntry(
               label: 'Orari',
               page: Pagina.orari,
