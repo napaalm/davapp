@@ -59,9 +59,9 @@ class _LoginViewState extends State<LoginView> {
       apiAuth.password = password;
       await apiAuth.login();
 
-      await prefs.setBool('logged', true);
       await prefs.setString('username', username);
       await prefs.setString('password', password);
+      await prefs.setBool('logged', true);
 
       Navigator.pushNamedAndRemoveUntil(
           context, '/home', ModalRoute.withName('/home'));

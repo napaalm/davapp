@@ -30,6 +30,8 @@ import 'package:package_info/package_info.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class LandingView extends StatefulWidget {
+  static bool alreadyInitialized = false;
+
   LandingView({Key key}) : super(key: key);
 
   @override
@@ -38,6 +40,9 @@ class LandingView extends StatefulWidget {
 
 class _LandingViewState extends State<LandingView> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  bool firstLaunch = false;
+  APIDav apiDav;
+  APIAuth apiAuth;
   SharedPreferences prefs;
 
   @override
@@ -47,35 +52,38 @@ class _LandingViewState extends State<LandingView> {
   }
 
   initializeApp() async {
-    bool firstLaunch = false;
     prefs = await SharedPreferences.getInstance();
 
-    packageInfo = await PackageInfo.fromPlatform();
-    version = packageInfo.version;
-    buildNumber = packageInfo.buildNumber;
+    if (!LandingView.alreadyInitialized) {
+      LandingView.alreadyInitialized = true;
+      packageInfo = await PackageInfo.fromPlatform();
+      version = packageInfo.version;
+      buildNumber = packageInfo.buildNumber;
 
-    await initializeDateFormatting('it_IT', null);
+      await initializeDateFormatting('it_IT', null);
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+      ComunicatiStorage storage = await ComunicatiStorage.createInstance();
 
-    ComunicatiStorage storage = await ComunicatiStorage.createInstance();
+      if (prefs.getString('login_url') == null) {
+        prefs.setString('login_url', defaultAuthURL);
+      }
 
-    if (prefs.getString('login_url') == null) {
-      prefs.setString('login_url', 'https://sso.liceodavinci.edu.it');
+      apiAuth = APIAuth(prefs.getString('login_url'));
+
+      if (prefs.getString('api_url') == null) {
+        prefs.setString('api_url', defaultAPIURL);
+        firstLaunch = true;
+      }
+
+      apiDav = APIDav(prefs.getString('api_url'), apiAuth);
+    } else {
+      apiDav = APIDav.instance;
+      apiAuth = APIAuth.instance;
     }
-
-    var apiAuth = APIAuth(prefs.getString('login_url'));
-
-    if (prefs.getString('api_url') == null) {
-      prefs.setString('api_url', 'https://liceodavinci.edu.it/api');
-      firstLaunch = true;
-    }
-
-    var a = APIDav(prefs.getString('api_url'), apiAuth);
 
     while (!firstLaunch) {
       try {
-        if (await a.isOnline()) {
+        if (await apiDav.isOnline()) {
           break;
         }
       } catch (e) {}
@@ -103,10 +111,8 @@ class _LandingViewState extends State<LandingView> {
           context, '/login', ModalRoute.withName('/login'));
     } else {
       try {
-        var username = prefs.getString('username');
-        var password = prefs.getString('password');
-        apiAuth.username = username;
-        apiAuth.password = password;
+        apiAuth.username = await prefs.getString('username');
+        apiAuth.password = await prefs.getString('password');
 
         await apiAuth.login();
       } catch (e) {

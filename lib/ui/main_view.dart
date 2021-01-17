@@ -20,6 +20,7 @@
 import 'package:flutter/material.dart';
 import 'package:davapp/ui/pages.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:davapp/backend/api.dart';
 
 enum Pagina {
   home,
@@ -106,6 +107,29 @@ class MainView extends StatefulWidget {
 
 class _MainViewState extends State<MainView> {
   Pagina _activePage = Pagina.home;
+
+  @override
+  void initState() {
+    super.initState();
+    checkConnection();
+  }
+
+  void checkConnection() async {
+    while (true) {
+      try {
+        if (!await APIDav.instance.isOnline()) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/', ModalRoute.withName('/'));
+          return;
+        }
+      } catch (e) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/', ModalRoute.withName('/'));
+        return;
+      }
+      await Future.delayed(Duration(seconds: 5));
+    }
+  }
 
   Widget _getPage(Pagina page) {
     switch (page) {
