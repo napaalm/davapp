@@ -93,6 +93,7 @@ class MainView extends StatefulWidget {
     Pagina.comunicatiGenitori: comunicatiBar('genitori'),
     Pagina.comunicatiDocenti: comunicatiBar('docenti'),
     Pagina.comunicatiSalvati: comunicatiBar('salvati'),
+    Pagina.orari: orariBar(),
     Pagina.informazioniSu: aboutBar(),
     Pagina.impostazioni: settingsBar(),
   };
@@ -118,6 +119,8 @@ class _MainViewState extends State<MainView> {
         return ComunicatiPage(ComunicatiType.docenti);
       case Pagina.comunicatiSalvati:
         return ComunicatiPage(ComunicatiType.salvati);
+      case Pagina.orari:
+        return OrariPage();
       case Pagina.informazioniSu:
         return AboutPage();
       case Pagina.impostazioni:
