@@ -21,26 +21,25 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class _StringUriException extends http.ClientException {
-  _StringUriException(String message, [String uri])
-      : super(message, (uri != null) ? Uri.dataFromString(uri) : null);
+  _StringUriException(String message, [Uri uri]) : super(message, uri);
 }
 
 class UnauthorizedException extends _StringUriException {
-  UnauthorizedException(String message, [String uri]) : super(message, uri);
+  UnauthorizedException(String message, [Uri uri]) : super(message, uri);
 }
 
 class BadRequestException extends _StringUriException {
-  BadRequestException(String message, [String uri])
+  BadRequestException(String message, [Uri uri])
       : super("Bad request: " + message, uri);
 }
 
 class InternalServerErrorException extends _StringUriException {
-  InternalServerErrorException(String message, [String uri])
+  InternalServerErrorException(String message, [Uri uri])
       : super("Errore interno al server: " + message, uri);
 }
 
 abstract class APIClient {
-  String apiURL;
+  Uri apiUri;
   http.Client client;
 
   Map<String, String> headers = {
@@ -48,13 +47,9 @@ abstract class APIClient {
     'Accept': 'application/json',
   };
 
-  void set url(String url) {
-    if (url.endsWith('/')) {
-      this.apiURL = url.substring(0, url.length - 1); // remove trailing slash
-    } else {
-      this.apiURL = url;
-    }
-  }
+  void set url(String url) => this.apiUri = Uri.parse(url);
+
+  void get url => this.apiUri.toString();
 
   APIClient(String url) {
     this.url = url;
@@ -62,31 +57,33 @@ abstract class APIClient {
   }
 
   Future<dynamic> apiGet(String path) async {
-    var response = await client.get(this.apiURL + path, headers: this.headers);
+    var uri = this.apiUri.replace(path: this.apiUri.path + path);
+    var response = await client.get(uri, headers: this.headers);
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else if (response.statusCode == 401) {
-      throw UnauthorizedException(response.body, this.apiURL + path);
+      throw UnauthorizedException(response.body, uri);
     } else if (response.statusCode == 400 || response.statusCode == 404) {
-      throw BadRequestException(response.body, this.apiURL + path);
+      throw BadRequestException(response.body, uri);
     } else {
-      throw InternalServerErrorException(response.body, this.apiURL + path);
+      throw InternalServerErrorException(response.body, uri);
     }
   }
 
   Future<dynamic> apiPost(String path, dynamic body) async {
-    var response = await client.post(this.apiURL + path,
-        headers: this.headers, body: jsonEncode(body));
+    var uri = this.apiUri.replace(path: this.apiUri.path + path);
+    var response =
+        await client.post(uri, headers: this.headers, body: jsonEncode(body));
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else if (response.statusCode == 401) {
-      throw UnauthorizedException(response.body, this.apiURL + path);
+      throw UnauthorizedException(response.body, uri);
     } else if (response.statusCode == 400 || response.statusCode == 404) {
-      throw BadRequestException(response.body, this.apiURL + path);
+      throw BadRequestException(response.body, uri);
     } else {
-      throw InternalServerErrorException(response.body, this.apiURL + path);
+      throw InternalServerErrorException(response.body, uri);
     }
   }
 

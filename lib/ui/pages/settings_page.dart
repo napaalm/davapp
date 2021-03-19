@@ -22,7 +22,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:validators/validators.dart';
+import 'package:string_validator/string_validator.dart';
 import 'package:theme_provider/theme_provider.dart';
 import 'package:davapp/backend/api.dart';
 
@@ -47,10 +47,10 @@ class ServerAddressDialog extends StatelessWidget {
 
   ServerAddressDialog(this.prefs, {Key key}) : super(key: key) {
     _APITextFieldController.value = _APITextFieldController.value.copyWith(
-      text: APIDav.instance.apiURL,
+      text: APIDav.instance.url,
     );
     _AuthTextFieldController.value = _AuthTextFieldController.value.copyWith(
-      text: APIAuth.instance.apiURL,
+      text: APIAuth.instance.url,
     );
   }
 
@@ -58,7 +58,9 @@ class ServerAddressDialog extends StatelessWidget {
     if (url.isEmpty) {
       return 'Inserisci un URL';
     }
-    if (!isURL(url, protocols: ['http', 'https'])) {
+    if (!isURL(url, {
+      'protocols': ['http', 'https']
+    })) {
       return 'Inserisci un URL valido!';
     }
     return null;

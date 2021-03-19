@@ -134,18 +134,31 @@ class APIDav extends APIClient {
           .cast<Attivita>()
           .toList();
 
-  Future<List<NewsElement>> news() async =>
-      parse((await client.get(apiURL + "/../sitoLiceo")).body)
-          .querySelector('ul.sprocket-features-img-list')
-          .children
-          .map((el) => NewsElement(
-                el.children[1].children[0].text,
-                apiURL +
-                    "/../" +
-                    el.children[0].children[0].children[0].attributes['src'],
-                apiURL + "/.." + el.children[0].children[0].attributes['href'],
-              ))
-          .toList();
+  Future<List<NewsElement>> news() async => parse((await client.get(apiUri
+              .replace(path: apiUri.path + "/../sitoLiceo")
+              .normalizePath()))
+          .body)
+      .querySelector('ul.sprocket-features-img-list')
+      .children
+      .map((el) => NewsElement(
+            el.children[1].children[0].text,
+            apiUri
+                .replace(
+                    path: apiUri.path +
+                        "/../" +
+                        el.children[0].children[0].children[0]
+                            .attributes['src'])
+                .normalizePath()
+                .toString(),
+            apiUri
+                .replace(
+                    path: apiUri.path +
+                        "/.." +
+                        el.children[0].children[0].attributes['href'])
+                .normalizePath()
+                .toString(),
+          ))
+      .toList();
 
   Future<ApiMessage> about() async =>
       ApiMessage.fromJson(await apiGet("/about"));
@@ -155,7 +168,8 @@ class APIDav extends APIClient {
 
   Future<bool> isOnline() async {
     try {
-      var response = await client.get(this.apiURL + "/teapot");
+      var response =
+          await client.get(apiUri.replace(path: apiUri.path + "/teapot"));
 
       if (response.statusCode == 418) {
         return true;
