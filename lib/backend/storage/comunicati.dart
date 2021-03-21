@@ -93,7 +93,8 @@ class ComunicatiStorage {
 
   Future _save(Comunicato comunicato) async {
     await db.insert(tableComunicati, comunicato.toMap());
-    (await DefaultCacheManager().getSingleFile(comunicato.url))
+    (await DefaultCacheManager().getSingleFile(comunicato.url,
+            headers: {'Authorization': 'Bearer ' + APIAuth.instance.token}))
         .copy(downloadPath + _fileName(comunicato));
   }
 

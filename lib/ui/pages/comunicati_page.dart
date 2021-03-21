@@ -133,8 +133,10 @@ class _ComunicatoCardState extends State<ComunicatoCard> {
             final path = ComunicatiStorage.instance.getPath(widget.comunicato);
             file = File(path);
           } else {
-            final fileStream = DefaultCacheManager()
-                .getFileStream(widget.comunicato.url, withProgress: true);
+            final fileStream = DefaultCacheManager().getFileStream(
+                widget.comunicato.url,
+                withProgress: true,
+                headers: {'Authorization': 'Bearer ' + APIAuth.instance.token});
             FileInfo fileInfo;
             await showDialog(
               context: context,
