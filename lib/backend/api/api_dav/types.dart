@@ -96,7 +96,7 @@ class Comunicato {
   factory Comunicato.fromJson(Map<String, dynamic> item) {
     return Comunicato(
       nome: item['nome'],
-      data: DateTime.parse(item['data']),
+      data: DateTime.parse(item['data']).toLocal(),
       tipo: gruppi[item['tipo']],
       url: item['url'],
     );

@@ -77,7 +77,7 @@ class ComunicatoCard extends StatefulWidget {
   String comunicatoName;
 
   final RegExp nameRegExp = RegExp(r'^([0-9]*)-(.*)\.pdf');
-  final DateFormat dateFormat = DateFormat.yMMMMd('it_IT').add_Hm();
+  final DateFormat dateFormat = DateFormat.yMMMMd('it_IT');
 
   ComunicatoCard(this.comunicato, {Key key}) : super(key: key) {
     final nameRegExpMatch = this.nameRegExp.firstMatch(this.comunicato.nome);
