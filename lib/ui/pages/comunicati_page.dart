@@ -19,14 +19,16 @@
 
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:path/path.dart' as p;
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:davapp/backend/api.dart';
 import 'package:davapp/backend/storage/comunicati.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:native_pdf_view/native_pdf_view.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
+import 'package:share/share.dart';
 
 enum ComunicatiType {
   studenti,
@@ -53,12 +55,17 @@ class ComunicatoView extends StatelessWidget {
             ? [
                 IconButton(
                     icon: Icon(Icons.share),
-                    onPressed: () => ShareFilesAndScreenshotWidgets().shareFile(
-                        this.name,
-                        this.comunicato.nome,
-                        this.file.readAsBytesSync(),
-                        "application/pdf",
-                        text: this.comunicato.url)),
+                    onPressed: () async {
+                      String tempPath = p.join(
+                          (await getTemporaryDirectory()).path,
+                          this.comunicato.nome);
+                      this.file.copy(tempPath);
+                      Share.shareFiles(
+                        [tempPath],
+                        subject: this.name,
+                        mimeTypes: ["application/pdf"],
+                      );
+                    }),
               ]
             : null,
       ),
