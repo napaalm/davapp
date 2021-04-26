@@ -35,7 +35,7 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AboutContent(
-      applicationVersion: 'Versione {{version}}, build #{{buildNumber}}',
+      applicationVersion: 'Versione ' + version + ', build #' + buildNumber,
       applicationIcon: SizedBox(
         width: 100,
         height: 100,

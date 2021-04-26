@@ -21,7 +21,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';
 import 'package:davapp/backend/api.dart';
 import 'package:davapp/backend/storage/comunicati.dart';
-import 'package:davapp/ui/pages/about_page.dart';
+import 'package:davapp/ui/pages/about_page.dart' as about_page;
 import 'package:davapp/ui/pages/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -56,9 +56,9 @@ class _LandingViewState extends State<LandingView> {
 
     if (!LandingView.alreadyInitialized) {
       LandingView.alreadyInitialized = true;
-      packageInfo = await PackageInfo.fromPlatform();
-      version = packageInfo.version;
-      buildNumber = packageInfo.buildNumber;
+      about_page.packageInfo = await PackageInfo.fromPlatform();
+      about_page.version = about_page.packageInfo.version;
+      about_page.buildNumber = about_page.packageInfo.buildNumber;
 
       await initializeDateFormatting('it_IT', null);
 
