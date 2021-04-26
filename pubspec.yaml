@@ -37,7 +37,7 @@ dependencies:
   package_info: ^2.0.0
   share_files_and_screenshot_widgets: ^1.0.3
   flutter_cache_manager: ^2.1.2
-  theme_provider: ^0.4.0+1
+  adaptive_theme: ^1.1.0
   html: ^0.15.0
   carousel_slider: ^3.0.0
   flutter_svg: ^0.21.0-nullsafety.0

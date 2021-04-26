@@ -23,7 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:string_validator/string_validator.dart';
-import 'package:theme_provider/theme_provider.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:davapp/backend/api.dart';
 
 const defaultAPIURL = 'http://liceodavinci.edu.it/api';
@@ -38,6 +38,84 @@ Map<Gruppo, String> groupNames = {
 AppBar settingsBar() => AppBar(
       title: Text('Impostazioni'),
     );
+
+class ThemeDialog extends StatefulWidget {
+  ThemeDialog({Key key}) : super(key: key);
+
+  @override
+  _ThemeDialogState createState() => _ThemeDialogState();
+}
+
+class _ThemeDialogState extends State<ThemeDialog> {
+  AdaptiveThemeMode _theme;
+
+  @override
+  void initState() {
+    super.initState();
+    this._theme = AdaptiveTheme.of(context).mode;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Scegli tema'),
+      content: SingleChildScrollView(
+        child: ListTileTheme(
+          contentPadding: EdgeInsets.all(0.0),
+          child: ListBody(
+            children: <Widget>[
+              RadioListTile<AdaptiveThemeMode>(
+                title: const Text('Sistema'),
+                value: AdaptiveThemeMode.system,
+                groupValue: _theme,
+                onChanged: (AdaptiveThemeMode value) {
+                  setState(() {
+                    _theme = value;
+                  });
+                },
+              ),
+              RadioListTile<AdaptiveThemeMode>(
+                title: const Text('Chiaro'),
+                value: AdaptiveThemeMode.light,
+                groupValue: _theme,
+                onChanged: (AdaptiveThemeMode value) {
+                  setState(() {
+                    _theme = value;
+                  });
+                },
+              ),
+              RadioListTile(
+                title: const Text('Scuro'),
+                value: AdaptiveThemeMode.dark,
+                groupValue: _theme,
+                onChanged: (AdaptiveThemeMode value) {
+                  setState(() {
+                    _theme = value;
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text('Annulla'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: Text('Salva'),
+          onPressed: () {
+            AdaptiveTheme.of(context).setThemeMode(_theme);
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+  }
+}
 
 class ServerAddressDialog extends StatelessWidget {
   final formKey = GlobalKey<FormState>();
@@ -209,12 +287,13 @@ class _SettingsPageState extends State<SettingsPage> {
           dense: true,
         ),
         ListTile(
-          title: Text('Tema applicazione'),
+          title: Text('Tema'),
           subtitle: Text('Cambia il tema predefinito'),
           onTap: () {
-            showDialog(
-                context: context,
-                builder: (_) => ThemeConsumer(child: ThemeDialog()));
+            showDialog<void>(
+              context: context,
+              builder: (BuildContext context) => ThemeDialog(),
+            );
           },
         ),
         ListTile(

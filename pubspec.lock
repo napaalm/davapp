@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  adaptive_theme:
+    dependency: "direct main"
+    description:
+      name: adaptive_theme
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   archive:
     dependency: transitive
     description:
@@ -539,13 +546,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.19"
-  theme_provider:
-    dependency: "direct main"
-    description:
-      name: theme_provider
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.0+1"
   typed_data:
     dependency: transitive
     description:
