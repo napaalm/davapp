@@ -28,7 +28,7 @@ String version;
 String buildNumber;
 
 AppBar aboutBar() => AppBar(
-      title: Text('Informazioni su'),
+      title: const Text('Informazioni su'),
     );
 
 class AboutPage extends StatelessWidget {
@@ -46,20 +46,20 @@ class AboutPage extends StatelessWidget {
       applicationDescription: Text(
           'Applicazione ufficiale del Liceo Scientifico Statale "Leonardo Da Vinci" di Treviso.'),
       children: <Widget>[
-        MarkdownPageListTile(
-          icon: Icon(Icons.description),
-          title: Text('Vedi licenza'),
+        const MarkdownPageListTile(
+          icon: const Icon(Icons.description),
+          title: const Text('Vedi licenza'),
           filename: 'assets/LICENSE.md',
         ),
         ListTile(
-            leading: Icon(Icons.code),
-            title: Text('Codice sorgente'),
+            leading: const Icon(Icons.code),
+            title: const Text('Codice sorgente'),
             onTap: () {
               launch('https://git.antonionapolitano.eu/napaalm/davapp');
             }),
         ListTile(
-            leading: Icon(Icons.person),
-            title: Text('Pagina web dell\'autore'),
+            leading: const Icon(Icons.person),
+            title: const Text('Pagina web dell\'autore'),
             onTap: () {
               launch('https://www.antonionapolitano.eu/');
             }),
@@ -68,7 +68,7 @@ class AboutPage extends StatelessWidget {
 //            title: Text('Sostieni lo sviluppo'),
 //            onTap: () {
 //            }),
-        LicensesPageListTile(
+        const LicensesPageListTile(
           title: Text('Licenze open source'),
           icon: Icon(Icons.favorite),
         ),

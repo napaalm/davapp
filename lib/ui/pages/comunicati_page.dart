@@ -50,11 +50,11 @@ class ComunicatoView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Comunicato'),
+        title: const Text('Comunicato'),
         actions: this.shareable
             ? [
                 IconButton(
-                    icon: Icon(Icons.share),
+                    icon: const Icon(Icons.share),
                     onPressed: () async {
                       String tempPath = p.join(
                           (await getTemporaryDirectory()).path,
@@ -148,17 +148,17 @@ class _ComunicatoCardState extends State<ComunicatoCard> {
             await showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                title: Text("Apertura documento..."),
+                title: const Text("Apertura documento..."),
                 content: StreamBuilder(
                     stream: fileStream,
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
-                        return LinearProgressIndicator();
+                        return const LinearProgressIndicator();
                       }
                       if (snapshot.data is FileInfo) {
                         fileInfo = snapshot.data;
                         Navigator.pop(context);
-                        return LinearProgressIndicator(value: 1.0);
+                        return const LinearProgressIndicator(value: 1.0);
                       }
                       return LinearProgressIndicator(
                           value: snapshot.data.progress);

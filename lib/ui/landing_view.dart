@@ -152,12 +152,12 @@ class _LandingViewState extends State<LandingView> {
                 child: SvgPicture.asset('assets/icon/logo_rect.svg',
                     semanticsLabel: 'Logo dell\'applicazione'),
               ),
-              Flexible(
+              const Flexible(
                 child: FractionallySizedBox(
                   heightFactor: 0.1,
                 ),
               ),
-              CircularProgressIndicator(
+              const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
             ],

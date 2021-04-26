@@ -23,7 +23,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 AppBar homeBar() => AppBar(
-      title: Text('Liceo Da Vinci'),
+      title: const Text('Liceo Da Vinci'),
     );
 
 class NewsCarousel extends StatefulWidget {
@@ -63,7 +63,8 @@ class _NewsCarouselState extends State<NewsCarousel> {
             return Container(
               width: 8.0,
               height: 8.0,
-              margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: _current == index
@@ -88,9 +89,9 @@ class HomePage extends StatefulWidget {
                 launch(el.articleUrl);
               },
               child: Container(
-                margin: EdgeInsets.all(5.0),
+                margin: const EdgeInsets.all(5.0),
                 child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    borderRadius: const BorderRadius.all(Radius.circular(5.0)),
                     child: Stack(
                       children: <Widget>[
                         Image.network(el.imageUrl,
@@ -100,8 +101,8 @@ class HomePage extends StatefulWidget {
                           left: 0.0,
                           right: 0.0,
                           child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
+                            decoration: const BoxDecoration(
+                              gradient: const LinearGradient(
                                 colors: [
                                   Color.fromARGB(200, 0, 0, 0),
                                   Color.fromARGB(0, 0, 0, 0)
@@ -110,11 +111,11 @@ class HomePage extends StatefulWidget {
                                 end: Alignment.topCenter,
                               ),
                             ),
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 vertical: 10.0, horizontal: 20.0),
                             child: Text(
                               el.title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.bold,
@@ -152,14 +153,14 @@ class _HomePageState extends State<HomePage> {
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasError) {
                 print(snapshot.error);
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               }
               if (snapshot.connectionState == ConnectionState.done) {
                 return NewsCarousel(
                   widget.carouselWidgets(snapshot.data),
                 );
               }
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             },
           ),
         ],

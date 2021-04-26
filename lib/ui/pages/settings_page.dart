@@ -36,7 +36,7 @@ Map<Gruppo, String> groupNames = {
 };
 
 AppBar settingsBar() => AppBar(
-      title: Text('Impostazioni'),
+      title: const Text('Impostazioni'),
     );
 
 class ThemeDialog extends StatefulWidget {
@@ -58,7 +58,7 @@ class _ThemeDialogState extends State<ThemeDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Scegli tema'),
+      title: const Text('Scegli tema'),
       content: SingleChildScrollView(
         child: ListTileTheme(
           contentPadding: EdgeInsets.all(0.0),
@@ -100,13 +100,13 @@ class _ThemeDialogState extends State<ThemeDialog> {
       ),
       actions: <Widget>[
         TextButton(
-          child: Text('Annulla'),
+          child: const Text('Annulla'),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         TextButton(
-          child: Text('Salva'),
+          child: const Text('Salva'),
           onPressed: () {
             AdaptiveTheme.of(context).setThemeMode(_theme);
             Navigator.of(context).pop();
@@ -147,7 +147,7 @@ class ServerAddressDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Modifica indirizzi server'),
+      title: const Text('Modifica indirizzi server'),
       content: SingleChildScrollView(
         child: Form(
           key: formKey,
@@ -155,7 +155,7 @@ class ServerAddressDialog extends StatelessWidget {
             children: <Widget>[
               TextFormField(
                 controller: _APITextFieldController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Indirizzo server webapi-dav',
                 ),
                 onSaved: (String value) {
@@ -166,7 +166,7 @@ class ServerAddressDialog extends StatelessWidget {
               ),
               TextFormField(
                 controller: _AuthTextFieldController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Indirizzo server di autenticazione',
                 ),
                 onSaved: (String value) {
@@ -181,20 +181,20 @@ class ServerAddressDialog extends StatelessWidget {
       ),
       actions: <Widget>[
         TextButton(
-          child: Text('Predefiniti'),
+          child: const Text('Predefiniti'),
           onPressed: () {
             _APITextFieldController.text = defaultAPIURL;
             _AuthTextFieldController.text = defaultAuthURL;
           },
         ),
         TextButton(
-          child: Text('Annulla'),
+          child: const Text('Annulla'),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         TextButton(
-          child: Text('Salva'),
+          child: const Text('Salva'),
           onPressed: () {
             final form = formKey.currentState;
             if (form.validate()) {
@@ -239,7 +239,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return ListView(
       children: <Widget>[
         ListTile(
-          title: Text(
+          title: const Text(
             'Informazioni utente',
           ),
           enabled: false,
@@ -272,14 +272,14 @@ class _SettingsPageState extends State<SettingsPage> {
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<bool>>[
                   PopupMenuItem<bool>(
                     value: true,
-                    child: Text('Esci'),
+                    child: const Text('Esci'),
                   ),
                 ],
               ),
             ),
           ),
         ),
-        ListTile(
+        const ListTile(
           title: Text(
             'Aspetto',
           ),
@@ -287,8 +287,8 @@ class _SettingsPageState extends State<SettingsPage> {
           dense: true,
         ),
         ListTile(
-          title: Text('Tema'),
-          subtitle: Text('Cambia il tema predefinito'),
+          title: const Text('Tema'),
+          subtitle: const Text('Cambia il tema predefinito'),
           onTap: () {
             showDialog<void>(
               context: context,
@@ -296,7 +296,7 @@ class _SettingsPageState extends State<SettingsPage> {
             );
           },
         ),
-        ListTile(
+        const ListTile(
           title: Text(
             'Avanzate',
           ),
@@ -304,9 +304,9 @@ class _SettingsPageState extends State<SettingsPage> {
           dense: true,
         ),
         ListTile(
-          title: Text('Modifica server'),
-          subtitle:
-              Text('Specifica gli indirizzi dei server per l\'applicazione'),
+          title: const Text('Modifica server'),
+          subtitle: const Text(
+              'Specifica gli indirizzi dei server per l\'applicazione'),
           onTap: () {
             showDialog<void>(
               context: context,

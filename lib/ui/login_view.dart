@@ -102,7 +102,7 @@ class _LoginViewState extends State<LoginView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Flexible(
+              const Flexible(
                 child: FractionallySizedBox(
                   heightFactor: 0.8,
                 ),
@@ -119,7 +119,7 @@ class _LoginViewState extends State<LoginView> {
                 child: SvgPicture.asset('assets/icon/logo_round.svg',
                     semanticsLabel: 'Logo dell\'applicazione'),
               ),
-              Flexible(
+              const Flexible(
                 child: FractionallySizedBox(
                   heightFactor: 0.3,
                 ),
@@ -128,12 +128,13 @@ class _LoginViewState extends State<LoginView> {
                 style: widget.textStyle,
                 cursorColor: Theme.of(context).colorScheme.primary,
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.fromLTRB(24.0, 15.0, 24.0, 15.0),
+                  contentPadding:
+                      const EdgeInsets.fromLTRB(24.0, 15.0, 24.0, 15.0),
                   hintText: 'Username',
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(32.0)),
-                  suffixIcon: Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 12.0),
+                  suffixIcon: const Padding(
+                    padding: EdgeInsetsDirectional.only(end: 12.0),
                     child: Icon(Icons.person),
                   ),
                 ),
@@ -147,7 +148,7 @@ class _LoginViewState extends State<LoginView> {
                   return null;
                 },
               ),
-              Flexible(
+              const Flexible(
                 child: FractionallySizedBox(
                   heightFactor: 0.15,
                 ),
@@ -157,12 +158,13 @@ class _LoginViewState extends State<LoginView> {
                 obscureText: true,
                 cursorColor: Theme.of(context).colorScheme.primary,
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.fromLTRB(24.0, 15.0, 24.0, 15.0),
+                  contentPadding:
+                      const EdgeInsets.fromLTRB(24.0, 15.0, 24.0, 15.0),
                   hintText: 'Password',
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(32.0)),
-                  suffixIcon: Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 12.0),
+                  suffixIcon: const Padding(
+                    padding: EdgeInsetsDirectional.only(end: 12.0),
                     child: Icon(Icons.lock),
                   ),
                 ),
@@ -176,7 +178,7 @@ class _LoginViewState extends State<LoginView> {
                   return null;
                 },
               ),
-              Flexible(
+              const Flexible(
                 child: FractionallySizedBox(
                   heightFactor: 0.20,
                 ),
@@ -187,12 +189,12 @@ class _LoginViewState extends State<LoginView> {
                 color: Theme.of(context).colorScheme.primary,
                 child: MaterialButton(
                   minWidth: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                  padding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                   onPressed: () async {
                     var form = formKey.currentState;
                     if (form.validate()) {
-                      scaffoldKey.currentState.showSnackBar(
-                          SnackBar(content: Text('Accesso al server...')));
+                      scaffoldKey.currentState.showSnackBar(SnackBar(
+                          content: const Text('Accesso al server...')));
                       form.save();
                       await _handleSubmit();
                     }

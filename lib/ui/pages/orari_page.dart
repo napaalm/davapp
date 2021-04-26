@@ -241,14 +241,14 @@ class _PersonalOrarioDialogState extends State<PersonalOrarioDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Seleziona il tuo orario'),
+      title: const Text('Seleziona il tuo orario'),
       content: SingleChildScrollView(
         child: Form(
           key: formKey,
           child: ListBody(
             children: <Widget>[
               ListTile(
-                title: Text('Classe'),
+                title: const Text('Classe'),
                 onTap: () {
                   setState(() {
                     _selected = TipoOrario.classe;
@@ -267,7 +267,7 @@ class _PersonalOrarioDialogState extends State<PersonalOrarioDialog> {
                 ),
               ),
               ListTile(
-                title: Text('Docente'),
+                title: const Text('Docente'),
                 onTap: () {
                   setState(() {
                     _selected = TipoOrario.docente;
@@ -292,13 +292,13 @@ class _PersonalOrarioDialogState extends State<PersonalOrarioDialog> {
       ),
       actions: <Widget>[
         TextButton(
-          child: Text('Annulla'),
+          child: const Text('Annulla'),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         TextButton(
-          child: Text('Salva'),
+          child: const Text('Salva'),
           onPressed: () {
             final form = formKey.currentState;
             if (form.validate()) {

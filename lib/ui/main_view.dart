@@ -170,10 +170,10 @@ class _MainViewState extends State<MainView> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              padding: EdgeInsets.all(0.0),
+              padding: const EdgeInsets.all(0.0),
               child: Container(
                 color: Theme.of(context).colorScheme.primary,
-                padding: EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(20.0),
                 child: SvgPicture.asset('assets/icon/logo_rect.svg',
                     semanticsLabel: 'Logo applicazione'),
               ),
@@ -186,7 +186,7 @@ class _MainViewState extends State<MainView> {
               selected: (_activePage == Pagina.home),
               handleMenu: _handleMenu,
             ),
-            MenuEntry(
+            const MenuEntry(
               isSeparator: true,
               label: 'Attività',
             ),
@@ -206,7 +206,7 @@ class _MainViewState extends State<MainView> {
               selected: (_activePage == Pagina.orari),
               handleMenu: _handleMenu,
             ),
-            MenuEntry(
+            const MenuEntry(
               isSeparator: true,
               label: 'Comunicati',
             ),
@@ -242,7 +242,7 @@ class _MainViewState extends State<MainView> {
               selected: (_activePage == Pagina.comunicatiSalvati),
               handleMenu: _handleMenu,
             ),
-            MenuEntry(
+            const MenuEntry(
               isSeparator: true,
               label: 'Utilità',
             ),
