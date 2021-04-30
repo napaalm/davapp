@@ -23,6 +23,8 @@ import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+const sourceURL = String.fromEnvironment('SOURCE_URL');
+
 PackageInfo packageInfo;
 String version;
 String buildNumber;
@@ -55,7 +57,7 @@ class AboutPage extends StatelessWidget {
             leading: const Icon(Icons.code),
             title: const Text('Codice sorgente'),
             onTap: () {
-              launch('https://git.antonionapolitano.eu/napaalm/davapp');
+              launch(sourceURL);
             }),
         ListTile(
             leading: const Icon(Icons.person),

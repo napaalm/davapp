@@ -26,8 +26,8 @@ import 'package:string_validator/string_validator.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:davapp/backend/api.dart';
 
-const defaultAPIURL = 'http://liceodavinci.edu.it/api';
-const defaultAuthURL = 'https://sso.davapi.antonionapolitano.eu';
+const defaultAPIURL = String.fromEnvironment('API_URL');
+const defaultAuthURL = String.fromEnvironment('AUTH_URL');
 
 Map<Gruppo, String> groupNames = {
   Gruppo.studenti: "Studente",

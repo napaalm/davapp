@@ -22,7 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:davapp/backend/api.dart';
 import 'package:davapp/backend/storage/comunicati.dart';
 import 'package:davapp/ui/pages/about_page.dart' as about_page;
-import 'package:davapp/ui/pages/settings_page.dart';
+import 'package:davapp/ui/pages/settings_page.dart' as settings_page;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:package_info/package_info.dart';
@@ -65,13 +65,13 @@ class _LandingViewState extends State<LandingView> {
       ComunicatiStorage storage = await ComunicatiStorage.createInstance();
 
       if (prefs.getString('login_url') == null) {
-        prefs.setString('login_url', defaultAuthURL);
+        prefs.setString('login_url', settings_page.defaultAuthURL);
       }
 
       apiAuth = APIAuth(prefs.getString('login_url'));
 
       if (prefs.getString('api_url') == null) {
-        prefs.setString('api_url', defaultAPIURL);
+        prefs.setString('api_url', settings_page.defaultAPIURL);
         firstLaunch = true;
       }
 
@@ -96,7 +96,7 @@ class _LandingViewState extends State<LandingView> {
             showDialog<void>(
               context: context,
               builder: (BuildContext context) {
-                return ServerAddressDialog(prefs);
+                return settings_page.ServerAddressDialog(prefs);
               },
             );
           },
