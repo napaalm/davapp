@@ -28,6 +28,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:native_pdf_view/native_pdf_view.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share/share.dart';
 
 enum ComunicatiType {
@@ -245,11 +246,58 @@ class LazyComunicatiGenerator {
   }
 }
 
+class WarningAlert extends StatefulWidget {
+  SharedPreferences prefs;
+
+  WarningAlert(this.prefs, {Key key}) : super(key: key);
+
+  @override
+  _WarningAlertState createState() => _WarningAlertState();
+}
+
+class _WarningAlertState extends State<WarningAlert> {
+  bool _dismissWarning = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Attenzione!'),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+            const Text(
+                'Potrebbero esserci ulteriori allegati a ciascuno dei comunicati. Per questi si rimanda al registro elettronico.'),
+            CheckboxListTile(
+              title: const Text('Non visualizzare più questo messaggio'),
+              value: _dismissWarning,
+              onChanged: (bool value) {
+                setState(() {
+                  _dismissWarning = value;
+                  widget.prefs.setBool('dismiss_comunicati_warning', value);
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('Chiudi'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+  }
+}
+
 AppBar comunicatiBar(String group) => AppBar(
       title: Text('Comunicati ' + group),
     );
 
 class ComunicatiPage extends StatefulWidget {
+  SharedPreferences prefs;
   LazyComunicatiGenerator lazyComunicatiGenerator;
 
   final Map<ComunicatiType, Function(int)> comunicatiGetter = {
@@ -270,7 +318,6 @@ class ComunicatiPage extends StatefulWidget {
 
 class _ComunicatiPageState extends State<ComunicatiPage> {
   final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
-  bool firstLoading = true;
 
   Future<void> refreshList() async {
     await widget.lazyComunicatiGenerator.refresh();
@@ -288,13 +335,23 @@ class _ComunicatiPageState extends State<ComunicatiPage> {
     );
   }
 
-  // hacky hack to reload the page automatically upon opening
+  // hacky hack to reload the page automatically upon opening and show warning message
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) async {
       this._refreshIndicatorKey.currentState.show();
+      widget.prefs = await SharedPreferences.getInstance();
+      var dismiss = widget.prefs.getBool('dismiss_comunicati_warning') ?? false;
+      if (!dismiss) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return WarningAlert(widget.prefs);
+          },
+        );
+      }
     });
   }
 
