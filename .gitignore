@@ -18,6 +18,9 @@ packages
 # Or the .dart_tool folder
 .dart_tool/
 
+# Or the keystore properties
+android/key.properties
+
 # Include when developing application packages.
 # pubspec.lock
 
