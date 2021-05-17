@@ -37,7 +37,7 @@ enum ComunicatiType {
   salvati,
 }
 
-class ComunicatoView extends StatelessWidget {
+class ComunicatoView extends StatefulWidget {
   final Future<PdfDocument> document;
   final File file;
   final Comunicato comunicato;
@@ -47,32 +47,70 @@ class ComunicatoView extends StatelessWidget {
   ComunicatoView(this.document, this.file, this.comunicato, this.name);
 
   @override
+  _ComunicatoViewState createState() => _ComunicatoViewState();
+}
+
+class _ComunicatoViewState extends State<ComunicatoView> {
+  int _currentPage = 1, _pages = 1;
+  PdfController _pdfController;
+
+  @override
+  void initState() {
+    _pdfController = PdfController(
+      document: widget.document,
+      initialPage: 1,
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _pdfController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Comunicato'),
-        actions: this.shareable
-            ? [
-                IconButton(
-                    icon: const Icon(Icons.share),
-                    onPressed: () async {
-                      String tempPath = p.join(
-                          (await getTemporaryDirectory()).path,
-                          this.comunicato.nome);
-                      this.file.copy(tempPath);
-                      Share.shareFiles(
-                        [tempPath],
-                        subject: this.name,
-                        mimeTypes: ["application/pdf"],
-                      );
-                    }),
-              ]
-            : null,
+        actions: [
+          Container(
+            alignment: Alignment.center,
+            child: Text(
+              '$_currentPage/$_pages',
+              style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
+            ),
+          ),
+          widget.shareable
+              ? IconButton(
+                  icon: const Icon(Icons.share),
+                  onPressed: () async {
+                    String tempPath = p.join(
+                        (await getTemporaryDirectory()).path,
+                        widget.comunicato.nome);
+                    widget.file.copy(tempPath);
+                    Share.shareFiles(
+                      [tempPath],
+                      subject: widget.name,
+                      mimeTypes: ["application/pdf"],
+                    );
+                  })
+              : null,
+        ],
       ),
       body: PdfView(
-        controller: PdfController(
-          document: this.document,
-        ),
+        controller: _pdfController,
+        onDocumentLoaded: (document) {
+          setState(() {
+            _pages = document.pagesCount;
+          });
+        },
+        onPageChanged: (page) {
+          setState(() {
+            _currentPage = page;
+          });
+        },
       ),
     );
   }
