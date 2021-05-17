@@ -112,7 +112,7 @@ packages:
       name: cupertino_icons
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.3"
   device_info:
     dependency: transitive
     description:
@@ -166,7 +166,7 @@ packages:
       name: flutter_cache_manager
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1"
+    version: "3.0.2"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -180,7 +180,7 @@ packages:
       name: flutter_markdown
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.1"
+    version: "0.6.2"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -218,7 +218,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.13.1"
+    version: "0.13.3"
   http_parser:
     dependency: transitive
     description:
@@ -316,14 +316,14 @@ packages:
       name: path_drawing
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.0"
+    version: "0.5.1"
   path_parsing:
     dependency: transitive
     description:
       name: path_parsing
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0"
+    version: "0.2.1"
   path_provider:
     dependency: "direct main"
     description:
@@ -421,7 +421,7 @@ packages:
       name: rxdart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.26.0"
+    version: "0.27.0"
   share:
     dependency: "direct main"
     description:
